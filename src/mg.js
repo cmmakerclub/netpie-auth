@@ -78,6 +78,9 @@ export class NetpieOAuth {
       data: (val) => {
         obj.data = val
         return ret;
+      },
+      request: (auth_func) => {
+        return this.request(ret.object(), auth_func)
       }
     }
 
@@ -85,28 +88,31 @@ export class NetpieOAuth {
   }
 
   OAuthGetRequestToken = async () => {
-    let request_data = this.build_request_object('/api/rtoken')
-    .data({oauth_callback: 'scope=&appid=' + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier});
-
-    // request token
-    let resp = await this.request(request_data.object(), (request_token) => {
+    let req1_resp = await this.build_request_object('/api/rtoken')
+    .data({oauth_callback: 'scope=&appid=' + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
+    .request((request_token) => {
       return this.oauth.toHeader(this.oauth.authorize(request_token)).Authorization
-    })
+    });
 
-    let {oauth_token, oauth_token_secret, oauth_callback_confirmed} = this.extract(await resp.text());
+    let token = this.extract(await req1_resp.text());
 
-    let request_data2 = this.build_request_object('/api/atoken').data({oauth_verifier: verifier})
 
-    // for verification
-    let resp2 = await this.request(request_data2.object(), (req_acc_token) => {
-      let reqtok = {
+    let req2_resp = await this.build_request_object('/api/atoken')
+    .data({oauth_verifier: verifier})
+    .request((req_acc_token) => {
+      let {oauth_token, oauth_token_secret} = token;
+      let _reqtok = {
         key: oauth_token,
         secret: oauth_token_secret
       };
-      return this.oauth.toHeader(this.oauth.authorize(req_acc_token, reqtok)).Authorization
+      let auth_header = this.oauth.toHeader(this.oauth.authorize(req_acc_token, _reqtok)).Authorization
+      console.log("auth_header", auth_header)
+      return auth_header;
     })
 
-    return this.extract(await resp2.text())
+
+    // let resp2 = await this.request(request_data2.object(),
+    return this.extract(await req2_resp.text())
   };
 }
 
