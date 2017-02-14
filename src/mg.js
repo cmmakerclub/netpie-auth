@@ -1,5 +1,6 @@
 var OAuth = require('oauth-1.0a');
-var CryptoJS = require("crypto-js");
+
+let CryptoJS = require("crypto-js");
 var fetch = require("node-fetch")
 
 const VERSION = '1.0.9';
@@ -13,15 +14,17 @@ const securemode = false;
 
 const MGREV = 'NJS1a';
 
-const appid = "HelloNETPIE";
-const appkey = "r0q49xoEnqf0ctw";
-const appsecret = "KvWGcHYfNNzKN3dAYKXVwUhf1";
+let appid, appkey, appsecret = ""
 
 
 export class NetpieOAuth {
-
   constructor (props) {
     console.log("props", props);
+    console.log(CryptoJS)
+    appid = props.appid
+    appkey = props.appkey
+    appsecret = props.appsecret
+    this.create(props)
   }
 
   getOAuthObject () {
@@ -52,19 +55,33 @@ export class NetpieOAuth {
     return out;
   }
 
+  async request (url, data) {
+    let ret = fetch(url, {
+      method: data.method,
+      headers: {
+        'Authorization': this.oauth.toHeader(this.oauth.authorize(data)).Authorization,
+      }
+    });
+
+    return ret;
+  }
+
   OAuthGetRequestToken = async () => {
+    console.log("OAuthGetRequest");
     let requesttoken = {};
-    var gearauthurl;
+    // var gearauthurl;
 
-    if (securemode) gearauthurl = 'https://' + GEARAPIADDRESS + ':' + GEARAPISECUREPORT;
-    else gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
+    // if (securemode) gearauthurl = 'https://' + GEARAPIADDRESS + ':' + GEARAPISECUREPORT;
+    // else
+    let gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
+    // var gearalias = undefined;
+    // var verifier;
+    // if (gearalias) verifier = gearalias;
+    // else verifier = MGREV;
 
-    var gearalias = undefined;
-    var verifier;
-    if (gearalias) verifier = gearalias;
-    else verifier = MGREV;
+    let verifier = MGREV;
 
-    // console.log("GearAuthURL", gearauthurl);
+    console.log("GearAuthURL", gearauthurl);
 
     let request_data = {
       url: gearauthurl + '/api/rtoken',
@@ -74,46 +91,54 @@ export class NetpieOAuth {
       }
     };
 
-    try {
-      let req1 = await fetch(request_data.url, {
-        method: request_data.method,
-        headers: {
-          'Authorization': this.oauth.toHeader(this.oauth.authorize(request_data)).Authorization,
-        }
-      });
-      let body = await req1.text();
-      let response_extracted = this.extract(body);
-      requesttoken.token = response_extracted.oauth_token;
-      requesttoken.secret = response_extracted.oauth_token_secret;
-      requesttoken.verifier = verifier;
+    let resp = await this.request(request_data.url, request_data)
+    let text1 = await resp.text();
+    console.log('text1', text1)
 
-      let reqtok = {
-        key: requesttoken.token,
-        secret: requesttoken.secret
-      };
-
-      // access token
-      let request_access_token = {
-        url: gearauthurl + '/api/atoken',
-        method: 'POST',
-        data: {
-          oauth_verifier: verifier,
-        }
-      };
-
-      let req3 = await fetch(request_access_token.url, {
-        method: request_access_token.method,
-        headers: {
-          'Authorization': this.oauth.toHeader(this.oauth.authorize(request_access_token, reqtok)).Authorization
-        }
-      });
-
-
-      return req3.text();
-    }
-    catch (error) {
-      console.log("error: ", error);
-    }
+    // try {
+    //   console.log("REQ 1")
+    //   let req1 = await fetch(request_data.url, {
+    //     method: request_data.method,
+    //     headers: {
+    //       'Authorization': this.oauth.toHeader(this.oauth.authorize(request_data)).Authorization,
+    //     }
+    //   });
+    //
+    //   console.log("WAIT REQ 1")
+    //   let body = await req1.text();
+    //   console.log("/WAIT REQ 1")
+    //   console.log("BODY >>>>>", body)
+    //   let response_extracted = this.extract(body);
+    //   requesttoken.token = response_extracted.oauth_token;
+    //   requesttoken.secret = response_extracted.oauth_token_secret;
+    //   requesttoken.verifier = verifier;
+    //
+    //   let reqtok = {
+    //     key: requesttoken.token,
+    //     secret: requesttoken.secret
+    //   };
+    //
+    //   // access token
+    //   let request_access_token = {
+    //     url: gearauthurl + '/api/atoken',
+    //     method: 'POST',
+    //     data: {
+    //       oauth_verifier: verifier,
+    //     }
+    //   };
+    //
+    //   let req3 = await fetch(request_access_token.url, {
+    //     method: request_access_token.method,
+    //     headers: {
+    //       'Authorization': this.oauth.toHeader(this.oauth.authorize(request_access_token, reqtok)).Authorization
+    //     }
+    //   });
+    //
+    //   return req3.text();
+    // }
+    // catch (error) {
+    //   console.log("error: ", error);
+    // }
   };
 }
 

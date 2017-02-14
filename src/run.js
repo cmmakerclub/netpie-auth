@@ -3,12 +3,12 @@ import {
 } from './mg'
 
 let fetch = require('node-fetch');
+let CryptoJS = require("crypto-js");
 
 console.log('fetch');
-console.log(fetch)
 
 
-const appid = "goose";
+const appid = "Goose";
 const appkey = "5vendgEVsO1ivas";
 const appsecret = "DyPBQ8TVzuE4mqWTtyuSXrFbE";
 
@@ -17,10 +17,9 @@ console.log("HELLO")
 let netpie = new NetpieOAuth({appid: appid, appkey: appkey, appsecret: appsecret});
 console.log("NETPIE", netpie)
 
-netpie.OAuthGetRequestToken()
-.then((text) => {
+netpie.OAuthGetRequestToken().then((text) => {
+  console.log(">>>>> text", text)
   // let accesstoken = netpie.extract(text);
-  console.log("text", text)
   // console.log(accesstoken);
   // var hkey = accesstoken.oauth_token_secret + '&' + appsecret;
   // var mqttusername = appkey + '%' + Math.floor(Date.now() / 1000);
