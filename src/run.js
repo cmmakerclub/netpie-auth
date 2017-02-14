@@ -22,7 +22,7 @@ netpie.OAuthGetRequestToken().then((response_object) => {
   let {oauth_token, oauth_token_secret, endpoint, flag} = response_object
 
   var hkey = oauth_token_secret + '&' + appsecret;
-  var mqttusername = appkey + '%' + Math.floor(Date.now() / 1000);
+  var mqttusername = appkey;
   var mqttpassword = CryptoJS.HmacSHA1(oauth_token + '%' +
     mqttusername, hkey).toString(CryptoJS.enc.Base64);
   var b = endpoint.substr(6).split(':');

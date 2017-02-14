@@ -87,6 +87,7 @@ export class NetpieOAuth {
     return ret;
   }
 
+
   OAuthGetRequestToken = async () => {
     let req1_resp = await this.build_request_object('/api/rtoken')
     .data({oauth_callback: 'scope=&appid=' + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
@@ -95,7 +96,6 @@ export class NetpieOAuth {
     });
 
     let token = this.extract(await req1_resp.text());
-
 
     let req2_resp = await this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
@@ -109,9 +109,6 @@ export class NetpieOAuth {
       console.log("auth_header", auth_header)
       return auth_header;
     })
-
-
-    // let resp2 = await this.request(request_data2.object(),
     return this.extract(await req2_resp.text())
   };
 }
