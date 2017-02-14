@@ -69,16 +69,7 @@ export class NetpieOAuth {
   OAuthGetRequestToken = async () => {
     console.log("OAuthGetRequest");
     let requesttoken = {};
-    // var gearauthurl;
-
-    // if (securemode) gearauthurl = 'https://' + GEARAPIADDRESS + ':' + GEARAPISECUREPORT;
-    // else
     let gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
-    // var gearalias = undefined;
-    // var verifier;
-    // if (gearalias) verifier = gearalias;
-    // else verifier = MGREV;
-
     let verifier = MGREV;
 
     console.log("GearAuthURL", gearauthurl);
