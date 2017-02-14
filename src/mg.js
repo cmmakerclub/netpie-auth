@@ -14,8 +14,6 @@ const securemode = false;
 
 const MGREV = 'NJS1a';
 
-let appid, appkey, appsecret = ""
-
 const gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 let verifier = MGREV;
 
@@ -24,9 +22,9 @@ export class NetpieOAuth {
   constructor (props) {
     console.log("props", props);
     console.log(CryptoJS)
-    appid = props.appid
-    appkey = props.appkey
-    appsecret = props.appsecret
+    this.appid = props.appid
+    this.appkey = props.appkey
+    this.appsecret = props.appsecret
     this.create(props)
   }
 
@@ -88,28 +86,23 @@ export class NetpieOAuth {
 
   OAuthGetRequestToken = async () => {
     let request_data = this.build_request_object('/api/rtoken')
-    .data({oauth_callback: 'scope=&appid=' + appid + '&mgrev=' + MGREV + '&verifier=' + verifier});
+    .data({oauth_callback: 'scope=&appid=' + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier});
 
     // request token
-    let resp = await this.request(request_data.object(), (data) => {
-      return this.oauth.toHeader(this.oauth.authorize(data)).Authorization
+    let resp = await this.request(request_data.object(), (request_token) => {
+      return this.oauth.toHeader(this.oauth.authorize(request_token)).Authorization
     })
 
     let {oauth_token, oauth_token_secret, oauth_callback_confirmed} = this.extract(await resp.text());
-    //
-    // console.log('oauth_token', oauth_token)
-    // console.log('oauth_token_secret', oauth_token_secret)
-    // console.log('oauth_token_callback_confirmed', oauth_callback_confirmed)
 
     let request_data2 = this.build_request_object('/api/atoken').data({oauth_verifier: verifier})
 
     // for verification
-    let reqtok = {
-      key: oauth_token,
-      secret: oauth_token_secret
-    };
-
     let resp2 = await this.request(request_data2.object(), (req_acc_token) => {
+      let reqtok = {
+        key: oauth_token,
+        secret: oauth_token_secret
+      };
       return this.oauth.toHeader(this.oauth.authorize(req_acc_token, reqtok)).Authorization
     })
 

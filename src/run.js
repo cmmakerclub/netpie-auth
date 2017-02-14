@@ -9,17 +9,16 @@ console.log('fetch');
 
 
 const appid = "Goose";
-const appkey = "5vendgEVsO1ivas";
-const appsecret = "DyPBQ8TVzuE4mqWTtyuSXrFbE";
+const appkey = "6vZ1z9uwjQlsrTv";
+const appsecret = "3mja7574hNYjkAWKZNJ84uL92";
 
 
 console.log("HELLO")
 let netpie = new NetpieOAuth({appid: appid, appkey: appkey, appsecret: appsecret});
 console.log("NETPIE", netpie)
 
-netpie.OAuthGetRequestToken().then((text) => {
-  console.log(">>>>> text", text)
-  // let accesstoken = netpie.extract(text);
+netpie.OAuthGetRequestToken().then((response_object) => {
+  console.log(">>>>> text", response_object)
   // console.log(accesstoken);
   // var hkey = accesstoken.oauth_token_secret + '&' + appsecret;
   // var mqttusername = appkey + '%' + Math.floor(Date.now() / 1000);
