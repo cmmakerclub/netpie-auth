@@ -21,7 +21,6 @@ let verifier = MGREV;
 export class NetpieOAuth {
   constructor (props) {
     console.log("props", props);
-    console.log(CryptoJS)
     this.appid = props.appid
     this.appkey = props.appkey
     this.appsecret = props.appsecret

@@ -100,7 +100,6 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
     }));
 
     console.log("props", props);
-    console.log(CryptoJS);
     this.appid = props.appid;
     this.appkey = props.appkey;
     this.appsecret = props.appsecret;
