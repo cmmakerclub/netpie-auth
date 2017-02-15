@@ -129,13 +129,18 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
   }, {
     key: "extract",
     value: function extract(response) {
-      var out = {};
+      console.log("response", response);
       var arr = response.split('&');
-      for (var i = 0; i < arr.length; i++) {
-        var a = arr[i].split('=');
-        out[a[0]] = a[1];
-      }
-      return out;
+      var mapped = arr.map(function (v, idx) {
+        var s = v.split("=");
+        var out = { key: s[0], value: s[1] };
+        return out;
+      }).reduce(function (acc, val) {
+        acc[val.key] = val.value;
+        return acc;
+      }, {});
+
+      return mapped;
     }
   }, {
     key: "request",

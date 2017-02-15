@@ -46,13 +46,18 @@ export class NetpieOAuth {
   }
 
   extract (response) {
-    var out = {};
-    var arr = response.split('&');
-    for (var i = 0; i < arr.length; i++) {
-      var a = arr[i].split('=');
-      out[a[0]] = a[1];
-    }
-    return out;
+    console.log("response", response);
+    let arr = response.split('&');
+    let mapped = arr.map((v, idx) => {
+      let s = v.split("=");
+      let out = {key: s[0], value: s[1]}
+      return out;
+    }).reduce((acc, val) => {
+      acc[val.key] = val.value;
+      return acc;
+    }, {});
+
+    return mapped;
   }
 
   async request (data, auth_func) {
