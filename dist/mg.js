@@ -5,6 +5,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.NetpieOAuth = undefined;
 
+var _slicedToArray2 = require("babel-runtime/helpers/slicedToArray");
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
+
 var _regenerator = require("babel-runtime/regenerator");
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
@@ -69,12 +73,9 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
               token = _context.t0.extract.call(_context.t0, _context.t1);
               _context.next = 10;
               return _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (req_acc_token) {
-                var oauth_token = token.oauth_token,
-                    oauth_token_secret = token.oauth_token_secret;
-
                 var _reqtok = {
-                  key: oauth_token,
-                  secret: oauth_token_secret
+                  key: token.oauth_token,
+                  secret: token.oauth_token_secret
                 };
                 var auth_header = _this.oauth.toHeader(_this.oauth.authorize(req_acc_token, _reqtok)).Authorization;
                 console.log("auth_header", auth_header);
@@ -129,18 +130,17 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
   }, {
     key: "extract",
     value: function extract(response) {
-      console.log("response", response);
       var arr = response.split('&');
-      var mapped = arr.map(function (v, idx) {
-        var s = v.split("=");
-        var out = { key: s[0], value: s[1] };
-        return out;
-      }).reduce(function (acc, val) {
-        acc[val.key] = val.value;
+      var reduced = arr.reduce(function (acc, v) {
+        var _v$split = v.split("="),
+            _v$split2 = (0, _slicedToArray3.default)(_v$split, 2),
+            key = _v$split2[0],
+            value = _v$split2[1];
+
+        acc[key] = value;
         return acc;
       }, {});
-
-      return mapped;
+      return reduced;
     }
   }, {
     key: "request",

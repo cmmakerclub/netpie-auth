@@ -46,18 +46,13 @@ export class NetpieOAuth {
   }
 
   extract (response) {
-    console.log("response", response);
     let arr = response.split('&');
-    let mapped = arr.map((v, idx) => {
-      let s = v.split("=");
-      let out = {key: s[0], value: s[1]}
-      return out;
-    }).reduce((acc, val) => {
-      acc[val.key] = val.value;
+    let reduced = arr.reduce((acc, v) => {
+      let [key, value] = v.split("=");
+      acc[key] = value;
       return acc;
     }, {});
-
-    return mapped;
+    return reduced;
   }
 
   async request (data, auth_func) {
@@ -67,7 +62,6 @@ export class NetpieOAuth {
         'Authorization': auth_func.apply(this, [data]),
       }
     });
-
     return ret;
   }
 
@@ -104,10 +98,9 @@ export class NetpieOAuth {
     let req2_resp = await this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
     .request((req_acc_token) => {
-      let {oauth_token, oauth_token_secret} = token;
       let _reqtok = {
-        key: oauth_token,
-        secret: oauth_token_secret
+        key: token.oauth_token,
+        secret: token.oauth_token_secret
       };
       let auth_header = this.oauth.toHeader(this.oauth.authorize(req_acc_token, _reqtok)).Authorization
       console.log("auth_header", auth_header)
