@@ -8,8 +8,8 @@ var fetch = require('node-fetch');
 var CryptoJS = require("crypto-js");
 
 var appid = "Goose";
-var appkey = "B245qf9iTE7tz00";
-var appsecret = "LSOMysLxZSKh6CYVarL1IDPkK";
+var appkey = "O7uO7woDfvgooFJ";
+var appsecret = "yvY8Pmx2hy5Wqx9d792lofsNE";
 
 var netpie = new _mg.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
 

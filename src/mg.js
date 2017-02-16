@@ -118,29 +118,41 @@ export class NetpieAuth {
     return req2_resp
   }
 
+  _saveRequestToken = (object) => {
+    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
+    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
+    this._storage.set(CMMC_Storage.KEY_VERIFIER, object.verifier)
+  }
+
+  _saveAccessToken = (object) => {
+    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
+    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
+    this._storage.set(CMMC_Storage.KEY_ENDPOINT, object.endpoint);
+    this._storage.set(CMMC_Storage.KEY_FLAG, object.flag);
+  }
+
 
   getToken = async () => {
     try {
       // STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
       let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
-
-      this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
-      this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
-      this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
+      this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
 
       // STEP2: GET ACCESS TOKEN
       let req2_resp = await this._getAccessToken();
       let token2 = this.extract(await req2_resp.text())
-      this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
-      this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
-      this._storage.set(CMMC_Storage.KEY_ENDPOINT, token2.endpoint);
-      this._storage.set(CMMC_Storage.KEY_FLAG, token2.flag);
-      this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
+      this._saveAccessToken({
+        oauth_token: token2.oauth_token,
+        oauth_token_secret: token2.oauth_token_secret,
+        endpoint: token2.endpoint,
+        flag: token2.flag
+      })
 
+      // if done then serialize to storage
       this._storage.commit()
-      console.log("token2", token2);
-      console.log(this._storage)
       return token2
     }
     catch (ex) {

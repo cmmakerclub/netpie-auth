@@ -110,6 +110,22 @@ var NetpieAuth = exports.NetpieAuth = function () {
         }
       }, _callee2, _this);
     }));
+
+    this._saveRequestToken = function (object) {
+      _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+      _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
+      _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
+      _this._storage.set(_storage.CMMC_Storage.KEY_VERIFIER, object.verifier);
+    };
+
+    this._saveAccessToken = function (object) {
+      _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+      _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
+      _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
+      _this._storage.set(_storage.CMMC_Storage.KEY_ENDPOINT, object.endpoint);
+      _this._storage.set(_storage.CMMC_Storage.KEY_FLAG, object.flag);
+    };
+
     this.getToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
       var req1_resp, _extract, oauth_token, oauth_token_secret, req2_resp, token2;
 
@@ -133,47 +149,44 @@ var NetpieAuth = exports.NetpieAuth = function () {
               oauth_token = _extract.oauth_token;
               oauth_token_secret = _extract.oauth_token_secret;
 
-
-              _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
-              _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
-              _this._storage.set(_storage.CMMC_Storage.KEY_VERIFIER, verifier);
+              _this._saveRequestToken({ oauth_token: oauth_token, oauth_token_secret: oauth_token_secret, verifier: verifier });
 
               // STEP2: GET ACCESS TOKEN
-              _context3.next = 16;
+              _context3.next = 14;
               return _this._getAccessToken();
 
-            case 16:
+            case 14:
               req2_resp = _context3.sent;
               _context3.t2 = _this;
-              _context3.next = 20;
+              _context3.next = 18;
               return req2_resp.text();
 
-            case 20:
+            case 18:
               _context3.t3 = _context3.sent;
               token2 = _context3.t2.extract.call(_context3.t2, _context3.t3);
 
-              _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
-              _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
-              _this._storage.set(_storage.CMMC_Storage.KEY_ENDPOINT, token2.endpoint);
-              _this._storage.set(_storage.CMMC_Storage.KEY_FLAG, token2.flag);
-              _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
+              _this._saveAccessToken({
+                oauth_token: token2.oauth_token,
+                oauth_token_secret: token2.oauth_token_secret,
+                endpoint: token2.endpoint,
+                flag: token2.flag
+              });
 
+              // if done then serialize to storage
               _this._storage.commit();
-              console.log("token2", token2);
-              console.log(_this._storage);
               return _context3.abrupt("return", token2);
 
-            case 33:
-              _context3.prev = 33;
+            case 25:
+              _context3.prev = 25;
               _context3.t4 = _context3["catch"](0);
               return _context3.abrupt("return", false);
 
-            case 36:
+            case 28:
             case "end":
               return _context3.stop();
           }
         }
-      }, _callee3, _this, [[0, 33]]);
+      }, _callee3, _this, [[0, 25]]);
     }));
 
     console.log("props", props);

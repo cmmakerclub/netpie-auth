@@ -8,8 +8,8 @@ let fetch = require('node-fetch');
 let CryptoJS = require("crypto-js");
 
 const appid = "Goose";
-const appkey = "B245qf9iTE7tz00";
-const appsecret = "LSOMysLxZSKh6CYVarL1IDPkK";
+const appkey = "O7uO7woDfvgooFJ";
+const appsecret = "yvY8Pmx2hy5Wqx9d792lofsNE";
 
 let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret});
 
