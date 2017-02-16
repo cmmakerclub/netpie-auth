@@ -17,10 +17,8 @@ var compute_hkey = function compute_hkey(access_token_secret, app_secret) {
   return access_token_secret + '&' + app_secret;
 };
 var compute_mqtt_password = function compute_mqtt_password(access_token, mqttusername, hkey) {
-  var string = access_token + '%' + mqttusername;
-  return CryptoJS.HmacSHA1(string, hkey).toString(CryptoJS.enc.Base64);
+  return CryptoJS.HmacSHA1(access_token + '%' + mqttusername, hkey).toString(CryptoJS.enc.Base64);
 };
-
 var compute_revoke_code = function compute_revoke_code(access_token, hkey) {
   return CryptoJS.HmacSHA1(access_token, hkey).toString(CryptoJS.enc.Base64).replace(/\//g, '_');
 };
@@ -40,10 +38,6 @@ netpie.getToken().then(function (token) {
 
   console.log('' + command_t);
   console.log('revoke code = ' + revoke_code);
-  //   var b = endpoint.substr(6).split(':');
-  //   console.log("B:", b)
-  //   console.log("endpoint:", endpoint)
-  //   console.log("flag:", flag)
 }).catch(function (ex) {
   console.log("CMMC_ERROR:>>", ex);
 });
