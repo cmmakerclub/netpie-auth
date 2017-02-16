@@ -25,12 +25,16 @@ var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
+var _storage = require("./storage");
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var OAuth = require('oauth-1.0a');
 
 var CryptoJS = require("crypto-js");
 var fetch = require("node-fetch");
+var localStorage = require("node-localstorage").JSONStorage;
+// let _storage = new localStorage('./data');
 
 var VERSION = '1.0.9';
 var GEARAPIADDRESS = 'ga.netpie.io';
@@ -46,53 +50,93 @@ var MGREV = 'NJS1a';
 var gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 var verifier = MGREV;
 
+var STATE = _storage.CMMC_Storage.STATE;
+
 var NetpieOAuth = exports.NetpieOAuth = function () {
   function NetpieOAuth(props) {
     var _this = this;
 
     (0, _classCallCheck3.default)(this, NetpieOAuth);
     this.OAuthGetRequestToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-      var req1_resp, token, req2_resp;
+      var req1_resp, token, oauth_token, oauth_token_secret, req2_resp, token2;
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.next = 2;
-              return _this.build_request_object('/api/rtoken').data({ oauth_callback: 'scope=&appid=' + _this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier }).request(function (request_token) {
+              _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+              _context.next = 3;
+              return _this.build_request_object('/api/rtoken').data({ oauth_callback: 'scope=&appid=' + "" + _this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier }).request(function (request_token) {
                 return _this.oauth.toHeader(_this.oauth.authorize(request_token)).Authorization;
               });
 
-            case 2:
+            case 3:
               req1_resp = _context.sent;
               _context.t0 = _this;
-              _context.next = 6;
+              _context.next = 7;
               return req1_resp.text();
 
-            case 6:
+            case 7:
               _context.t1 = _context.sent;
               token = _context.t0.extract.call(_context.t0, _context.t1);
-              _context.next = 10;
-              return _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (req_acc_token) {
+              oauth_token = token.oauth_token, oauth_token_secret = token.oauth_token_secret;
+
+
+              console.log("TOKEN>>>>>>", token);
+
+              _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+              _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
+              _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
+
+              _this._storage.commit();
+
+              // console.log("TOKEN ====>", token);
+              // token.verifier = verifier;
+              //
+              // console.log("token", token);
+
+              _context.next = 17;
+              return _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
                 var _reqtok = {
-                  key: token.oauth_token,
-                  secret: token.oauth_token_secret
+                  key: _this._storage.get(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
+                  secret: _this._storage.get(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
                 };
-                var auth_header = _this.oauth.toHeader(_this.oauth.authorize(req_acc_token, _reqtok)).Authorization;
+                console.log("req_acc_token", request_data);
+                var auth_header = _this.oauth.toHeader(_this.oauth.authorize(request_data, _reqtok)).Authorization;
                 console.log("auth_header", auth_header);
                 return auth_header;
               });
 
-            case 10:
+            case 17:
               req2_resp = _context.sent;
               _context.t2 = _this;
-              _context.next = 14;
+              _context.next = 21;
               return req2_resp.text();
 
-            case 14:
+            case 21:
               _context.t3 = _context.sent;
-              return _context.abrupt("return", _context.t2.extract.call(_context.t2, _context.t3));
+              token2 = _context.t2.extract.call(_context.t2, _context.t3);
 
-            case 16:
+
+              _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+              _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
+              _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token.oauth_token_secret);
+              _this._storage.commit();
+              //
+              console.log("token2", token2);
+              //
+              // _storage.setItem("request_token", token);
+              // _storage.setItem("access_token", token2);
+              // _storage.setItem("oauth_request_token", token.oauth_token)
+              // _storage.setItem("oauth_request_token_secret", token.oauth_token_secret)
+              // _storage.setItem("oauth_access_token", token2.oauth_token)
+              // _storage.setItem("oauth_access_token_secret", token2.oauth_token_secret)
+              // _storage.setItem("endpoint", token2.endpoint)
+              // _storage.setItem("flag", token2.flag)
+
+              console.log(_this._storage);
+              return _context.abrupt("return", token2);
+
+            case 30:
             case "end":
               return _context.stop();
           }
@@ -105,6 +149,7 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
     this.appkey = props.appkey;
     this.appsecret = props.appsecret;
     this.create(props);
+    this._storage = new _storage.CMMC_Storage(this.appid);
   }
 
   (0, _createClass3.default)(NetpieOAuth, [{
@@ -153,6 +198,7 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
               case 0:
                 ret = fetch(data.url, {
                   method: data.method,
+                  timeout: 5000,
                   headers: {
                     'Authorization': auth_func.apply(this, [data])
                   }
@@ -197,7 +243,6 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
           return _this2.request(ret.object(), auth_func);
         }
       };
-
       return ret;
     }
   }]);
