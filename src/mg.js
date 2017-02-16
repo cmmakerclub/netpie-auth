@@ -121,6 +121,7 @@ export class NetpieAuth {
 
   getToken = async () => {
     try {
+      // STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
       let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
 
@@ -128,6 +129,7 @@ export class NetpieAuth {
       this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
       this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
 
+      // STEP2: GET ACCESS TOKEN
       let req2_resp = await this._getAccessToken();
       let token2 = this.extract(await req2_resp.text())
       this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
@@ -139,7 +141,7 @@ export class NetpieAuth {
       this._storage.commit()
       console.log("token2", token2);
       console.log(this._storage)
-      return true
+      return token2
     }
     catch (ex) {
       return false

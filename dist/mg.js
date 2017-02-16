@@ -138,6 +138,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
               _this._storage.set(_storage.CMMC_Storage.KEY_VERIFIER, verifier);
 
+              // STEP2: GET ACCESS TOKEN
               _context3.next = 16;
               return _this._getAccessToken();
 
@@ -160,7 +161,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               _this._storage.commit();
               console.log("token2", token2);
               console.log(_this._storage);
-              return _context3.abrupt("return", true);
+              return _context3.abrupt("return", token2);
 
             case 33:
               _context3.prev = 33;
