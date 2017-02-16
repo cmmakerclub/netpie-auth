@@ -8,8 +8,8 @@ var fetch = require('node-fetch');
 var CryptoJS = require("crypto-js");
 
 var appid = "Goose";
-var appkey = "wdgGaeLQ6JPSkBA";
-var appsecret = "r35kB6FoQqfSj7IHGifQIbN2h";
+var appkey = "B245qf9iTE7tz00";
+var appsecret = "LSOMysLxZSKh6CYVarL1IDPkK";
 
 var netpie = new _mg.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
 
@@ -28,16 +28,18 @@ netpie.getToken().then(function (token) {
       oauth_token_secret = token.oauth_token_secret,
       endpoint = token.endpoint,
       flag = token.flag;
+  // let hkey = appsecret;//(oauth_token_secret, appsecret)
 
-  var hkey = compute_hkey(oauth_token_secret, appsecret);
-  var mqttusername = appkey + '%' + Math.floor(Date.now() / 1000);
+  var hkey = compute_hkey(oauth_token, appsecret);
+  // let mqttusername = `${appkey}%${Math.floor(Date.now()/1000)}`;
+  var mqttusername = '' + appkey;
   var mqttpassword = compute_mqtt_password(oauth_token, mqttusername, hkey);
   var revoke_code = compute_revoke_code(oauth_token, hkey);
 
   var command_t = 'mosquitto_sub -t "/' + appid + '/gearname/#" -h gb.netpie.io -i ' + oauth_token + ' -u "' + mqttusername + '" -P "' + mqttpassword + '" -d';
 
-  console.log('' + command_t);
   console.log('revoke code = ' + revoke_code);
+  console.log('' + command_t);
 }).catch(function (ex) {
   console.log("CMMC_ERROR:>>", ex);
 });
