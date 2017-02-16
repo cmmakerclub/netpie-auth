@@ -21,10 +21,8 @@ let compute_revoke_code = (access_token, hkey) =>
 
 netpie.getToken().then((token) => {
   let {oauth_token, oauth_token_secret, endpoint, flag} = token
-  // let hkey = appsecret;//(oauth_token_secret, appsecret)
-  let hkey = compute_hkey(oauth_token, appsecret)
-  // let mqttusername = `${appkey}%${Math.floor(Date.now()/1000)}`;
-  let mqttusername = `${appkey}`;
+  let hkey = compute_hkey(oauth_token_secret, appsecret)
+  let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`;
   let mqttpassword = compute_mqtt_password(oauth_token, mqttusername, hkey)
   let revoke_code = compute_revoke_code(oauth_token, hkey)
 

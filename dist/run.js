@@ -28,11 +28,9 @@ netpie.getToken().then(function (token) {
       oauth_token_secret = token.oauth_token_secret,
       endpoint = token.endpoint,
       flag = token.flag;
-  // let hkey = appsecret;//(oauth_token_secret, appsecret)
 
-  var hkey = compute_hkey(oauth_token, appsecret);
-  // let mqttusername = `${appkey}%${Math.floor(Date.now()/1000)}`;
-  var mqttusername = '' + appkey;
+  var hkey = compute_hkey(oauth_token_secret, appsecret);
+  var mqttusername = appkey + '%' + Math.floor(Date.now() / 1000);
   var mqttpassword = compute_mqtt_password(oauth_token, mqttusername, hkey);
   var revoke_code = compute_revoke_code(oauth_token, hkey);
 
