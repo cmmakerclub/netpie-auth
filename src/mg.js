@@ -92,25 +92,18 @@ export class NetpieOAuth {
     return ret;
   }
 
-
-  getToken = async () => {
+  _getRequestToken = async () => {
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
     let req1_resp = await this.build_request_object('/api/rtoken')
     .data({oauth_callback: 'scope=&appid=' + "" + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
     .request((request_token) => {
       return this.oauth.toHeader(this.oauth.authorize(request_token)).Authorization
     });
+    return req1_resp
+  }
 
-    let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
-
-    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
-    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
-    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
-    this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
-
-    this._storage.commit()
-
-
+  _getAccessToken = async () => {
+    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
     let req2_resp = await this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
     .request((request_data) => {
@@ -123,9 +116,23 @@ export class NetpieOAuth {
       console.log("auth_header", auth_header)
       return auth_header;
     })
+    return req2_resp
+  }
 
+
+  getToken = async () => {
+    let req1_resp = await this._getRequestToken();
+    let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
+
+    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
+    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
+    this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
+
+    this._storage.commit()
+
+
+    let req2_resp = await this._getAccessToken();
     let token2 = this.extract(await req2_resp.text())
-
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
     this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
     this._storage.set(CMMC_Storage.KEY_ENDPOINT, token2.endpoint);
@@ -134,16 +141,6 @@ export class NetpieOAuth {
 
     this._storage.commit()
     console.log("token2", token2);
-    //
-    // _storage.setItem("request_token", token);
-    // _storage.setItem("access_token", token2);
-    // _storage.setItem("oauth_request_token", token.oauth_token)
-    // _storage.setItem("oauth_request_token_secret", token.oauth_token_secret)
-    // _storage.setItem("oauth_access_token", token2.oauth_token)
-    // _storage.setItem("oauth_access_token_secret", token2.oauth_token_secret)
-    // _storage.setItem("endpoint", token2.endpoint)
-    // _storage.setItem("flag", token2.flag)
-
     console.log(this._storage)
     return token2
   };
