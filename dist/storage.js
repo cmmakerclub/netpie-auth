@@ -67,6 +67,7 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
     _this._storage_driver = null;
 
     _this._storage_driver = new localStorage('./' + name);
+    _this._storage_driver.setItem("mg_cached", _this._storage);
     if (open_now) {
       _this.load();
     }
@@ -98,6 +99,7 @@ CMMC_Storage.KEY_ACCESS_TOKEN = 0x04;
 CMMC_Storage.KEY_ACCESS_TOKEN_SECRET = 0x05;
 CMMC_Storage.KEY_REVOKE_TOKEN = 0x06;
 CMMC_Storage.KEY_ENDPOINT = 0x07;
-CMMC_Storage.KEY_APP_KEY = 0x08;
-CMMC_Storage.KEY_APP_SECRET = 0x09;
-CMMC_Storage.KEY_VERIFIER = 0x10;
+CMMC_Storage.KEY_FLAG = 0x08;
+CMMC_Storage.KEY_APP_KEY = 0x09;
+CMMC_Storage.KEY_APP_SECRET = 0x0a;
+CMMC_Storage.KEY_VERIFIER = 0x0b;

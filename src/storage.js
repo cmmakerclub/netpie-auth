@@ -40,13 +40,15 @@ export class CMMC_Storage extends IStorage {
   static KEY_ACCESS_TOKEN_SECRET = 0x05
   static KEY_REVOKE_TOKEN = 0x06
   static KEY_ENDPOINT = 0x07
-  static KEY_APP_KEY = 0x08
-  static KEY_APP_SECRET = 0x09
-  static KEY_VERIFIER = 0x10
+  static KEY_FLAG = 0x08
+  static KEY_APP_KEY = 0x09
+  static KEY_APP_SECRET = 0x0a
+  static KEY_VERIFIER = 0x0b
 
   constructor (name = 'tmp', open_now=true) {
     super();
     this._storage_driver = new localStorage('./' + name);
+    this._storage_driver.setItem("mg_cached", this._storage);
     if (open_now) {
       this.load();
     }

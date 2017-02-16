@@ -86,15 +86,11 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
               _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
+              _this._storage.set(_storage.CMMC_Storage.KEY_VERIFIER, verifier);
 
               _this._storage.commit();
 
-              // console.log("TOKEN ====>", token);
-              // token.verifier = verifier;
-              //
-              // console.log("token", token);
-
-              _context.next = 17;
+              _context.next = 18;
               return _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
                 var _reqtok = {
                   key: _this._storage.get(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
@@ -106,23 +102,24 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
                 return auth_header;
               });
 
-            case 17:
+            case 18:
               req2_resp = _context.sent;
               _context.t2 = _this;
-              _context.next = 21;
+              _context.next = 22;
               return req2_resp.text();
 
-            case 21:
+            case 22:
               _context.t3 = _context.sent;
               token2 = _context.t2.extract.call(_context.t2, _context.t3);
 
 
               _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
               _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
+              _this._storage.set(_storage.CMMC_Storage.KEY_ENDPOINT, token2.endpoint);
+              _this._storage.set(_storage.CMMC_Storage.KEY_FLAG, token2.flag);
               _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
 
               _this._storage.commit();
-              //
               console.log("token2", token2);
               //
               // _storage.setItem("request_token", token);
@@ -137,7 +134,7 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
               console.log(_this._storage);
               return _context.abrupt("return", token2);
 
-            case 30:
+            case 33:
             case "end":
               return _context.stop();
           }

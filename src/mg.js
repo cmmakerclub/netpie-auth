@@ -106,13 +106,10 @@ export class NetpieOAuth {
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
     this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
     this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
+    this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
 
     this._storage.commit()
 
-    // console.log("TOKEN ====>", token);
-    // token.verifier = verifier;
-    //
-    // console.log("token", token);
 
     let req2_resp = await this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
@@ -131,10 +128,11 @@ export class NetpieOAuth {
 
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
     this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
+    this._storage.set(CMMC_Storage.KEY_ENDPOINT, token2.endpoint);
+    this._storage.set(CMMC_Storage.KEY_FLAG, token2.flag);
     this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
 
     this._storage.commit()
-    //
     console.log("token2", token2);
     //
     // _storage.setItem("request_token", token);
