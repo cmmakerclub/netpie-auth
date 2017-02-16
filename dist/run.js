@@ -13,18 +13,12 @@ var appsecret = "r35kB6FoQqfSj7IHGifQIbN2h";
 
 var netpie = new _mg.NetpieOAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
 
-var s2 = new _storage.CMMC_Storage(appid);
-
-// s2.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, 'world');
-// s2.commit();
-// CMMC_Storage.STATE.STATE_ACCESS_TOKEN
-
 // console.log("GET = ", s2.get(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN));
-netpie.OAuthGetRequestToken().then(function (response_object) {
-  var oauth_token = response_object.oauth_token,
-      oauth_token_secret = response_object.oauth_token_secret,
-      endpoint = response_object.endpoint,
-      flag = response_object.flag;
+netpie.getToken().then(function (token) {
+  var oauth_token = token.oauth_token,
+      oauth_token_secret = token.oauth_token_secret,
+      endpoint = token.endpoint,
+      flag = token.flag;
   //
   //   var hkey = oauth_token_secret + '&' + appsecret;
   //   var mqttusername = appkey;

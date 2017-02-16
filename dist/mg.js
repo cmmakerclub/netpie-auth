@@ -57,8 +57,9 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
     var _this = this;
 
     (0, _classCallCheck3.default)(this, NetpieOAuth);
-    this.OAuthGetRequestToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-      var req1_resp, token, oauth_token, oauth_token_secret, req2_resp, token2;
+    this.getToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
+      var req1_resp, _extract, oauth_token, oauth_token_secret, req2_resp, token2;
+
       return _regenerator2.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -77,11 +78,10 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
 
             case 7:
               _context.t1 = _context.sent;
-              token = _context.t0.extract.call(_context.t0, _context.t1);
-              oauth_token = token.oauth_token, oauth_token_secret = token.oauth_token_secret;
+              _extract = _context.t0.extract.call(_context.t0, _context.t1);
+              oauth_token = _extract.oauth_token;
+              oauth_token_secret = _extract.oauth_token_secret;
 
-
-              console.log("TOKEN>>>>>>", token);
 
               _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
@@ -119,7 +119,8 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
 
               _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
               _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
-              _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token.oauth_token_secret);
+              _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
+
               _this._storage.commit();
               //
               console.log("token2", token2);

@@ -13,15 +13,9 @@ const appsecret = "r35kB6FoQqfSj7IHGifQIbN2h";
 
 let netpie = new NetpieOAuth({appid: appid, appkey: appkey, appsecret: appsecret});
 
-let s2 = new CMMC_Storage(appid);
-
-// s2.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, 'world');
-// s2.commit();
-// CMMC_Storage.STATE.STATE_ACCESS_TOKEN
-
 // console.log("GET = ", s2.get(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN));
-netpie.OAuthGetRequestToken().then((response_object) => {
-  let {oauth_token, oauth_token_secret, endpoint, flag} = response_object
+netpie.getToken().then((token) => {
+  let {oauth_token, oauth_token_secret, endpoint, flag} = token
 //
 //   var hkey = oauth_token_secret + '&' + appsecret;
 //   var mqttusername = appkey;

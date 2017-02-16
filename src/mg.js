@@ -93,7 +93,7 @@ export class NetpieOAuth {
   }
 
 
-  OAuthGetRequestToken = async () => {
+  getToken = async () => {
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
     let req1_resp = await this.build_request_object('/api/rtoken')
     .data({oauth_callback: 'scope=&appid=' + "" + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
@@ -101,10 +101,7 @@ export class NetpieOAuth {
       return this.oauth.toHeader(this.oauth.authorize(request_token)).Authorization
     });
 
-    let token = this.extract(await req1_resp.text());
-    let {oauth_token, oauth_token_secret} = token;
-
-    console.log("TOKEN>>>>>>", token)
+    let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
 
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
     this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
@@ -134,7 +131,8 @@ export class NetpieOAuth {
 
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
     this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
-    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token.oauth_token_secret);
+    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
+
     this._storage.commit()
     //
     console.log("token2", token2);
