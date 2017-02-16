@@ -120,27 +120,30 @@ export class NetpieAuth {
 
 
   getToken = async () => {
-    let req1_resp = await this._getRequestToken();
-    let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
+    try {
+      let req1_resp = await this._getRequestToken();
+      let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
 
-    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
-    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
-    this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
-    this._storage.commit()
+      this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
+      this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
+      this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
 
+      let req2_resp = await this._getAccessToken();
+      let token2 = this.extract(await req2_resp.text())
+      this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+      this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
+      this._storage.set(CMMC_Storage.KEY_ENDPOINT, token2.endpoint);
+      this._storage.set(CMMC_Storage.KEY_FLAG, token2.flag);
+      this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
 
-    let req2_resp = await this._getAccessToken();
-    let token2 = this.extract(await req2_resp.text())
-    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
-    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, token2.oauth_token);
-    this._storage.set(CMMC_Storage.KEY_ENDPOINT, token2.endpoint);
-    this._storage.set(CMMC_Storage.KEY_FLAG, token2.flag);
-    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, token2.oauth_token_secret);
-
-    this._storage.commit()
-    console.log("token2", token2);
-    console.log(this._storage)
-    return token2
+      this._storage.commit()
+      console.log("token2", token2);
+      console.log(this._storage)
+      return true
+    }
+    catch (ex) {
+      return false
+    }
   };
 }
 

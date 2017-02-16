@@ -117,16 +117,17 @@ var NetpieAuth = exports.NetpieAuth = function () {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              _context3.next = 2;
+              _context3.prev = 0;
+              _context3.next = 3;
               return _this._getRequestToken();
 
-            case 2:
+            case 3:
               req1_resp = _context3.sent;
               _context3.t0 = _this;
-              _context3.next = 6;
+              _context3.next = 7;
               return req1_resp.text();
 
-            case 6:
+            case 7:
               _context3.t1 = _context3.sent;
               _extract = _context3.t0.extract.call(_context3.t0, _context3.t1);
               oauth_token = _extract.oauth_token;
@@ -136,7 +137,6 @@ var NetpieAuth = exports.NetpieAuth = function () {
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
               _this._storage.set(_storage.CMMC_Storage.KEY_VERIFIER, verifier);
-              _this._storage.commit();
 
               _context3.next = 16;
               return _this._getAccessToken();
@@ -160,14 +160,19 @@ var NetpieAuth = exports.NetpieAuth = function () {
               _this._storage.commit();
               console.log("token2", token2);
               console.log(_this._storage);
-              return _context3.abrupt("return", token2);
+              return _context3.abrupt("return", true);
 
-            case 31:
+            case 33:
+              _context3.prev = 33;
+              _context3.t4 = _context3["catch"](0);
+              return _context3.abrupt("return", false);
+
+            case 36:
             case "end":
               return _context3.stop();
           }
         }
-      }, _callee3, _this);
+      }, _callee3, _this, [[0, 33]]);
     }));
 
     console.log("props", props);
