@@ -11,7 +11,7 @@ var appid = "Goose";
 var appkey = "wdgGaeLQ6JPSkBA";
 var appsecret = "r35kB6FoQqfSj7IHGifQIbN2h";
 
-var netpie = new _mg.NetpieOAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
+var netpie = new _mg.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
 
 var compute_hkey = function compute_hkey(access_token_secret, app_secret) {
   return access_token_secret + '&' + app_secret;
@@ -30,7 +30,7 @@ netpie.getToken().then(function (token) {
       flag = token.flag;
 
   var hkey = compute_hkey(oauth_token_secret, appsecret);
-  var mqttusername = appkey;
+  var mqttusername = appkey + '%' + Math.floor(Date.now() / 1000);
   var mqttpassword = compute_mqtt_password(oauth_token, mqttusername, hkey);
   var revoke_code = compute_revoke_code(oauth_token, hkey);
 

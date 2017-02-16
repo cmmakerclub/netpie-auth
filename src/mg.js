@@ -24,7 +24,7 @@ import {CMMC_Storage} from './storage'
 
 const STATE = CMMC_Storage.STATE
 
-export class NetpieOAuth {
+export class NetpieAuth {
   constructor (props) {
     console.log("props", props);
     this.appid = props.appid
@@ -101,7 +101,6 @@ export class NetpieOAuth {
     });
     return req1_resp
   }
-
   _getAccessToken = async () => {
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
     let req2_resp = await this.build_request_object('/api/atoken')
@@ -127,7 +126,6 @@ export class NetpieOAuth {
     this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
     this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
     this._storage.set(CMMC_Storage.KEY_VERIFIER, verifier)
-
     this._storage.commit()
 
 

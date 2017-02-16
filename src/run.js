@@ -1,5 +1,5 @@
 import {
-  NetpieOAuth
+  NetpieAuth
 } from './mg'
 
 import {CMMC_Storage} from './storage'
@@ -11,7 +11,7 @@ const appid = "Goose";
 const appkey = "wdgGaeLQ6JPSkBA";
 const appsecret = "r35kB6FoQqfSj7IHGifQIbN2h";
 
-let netpie = new NetpieOAuth({appid: appid, appkey: appkey, appsecret: appsecret});
+let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret});
 
 let compute_hkey = (access_token_secret, app_secret) => `${access_token_secret}&${app_secret}`
 let compute_mqtt_password = (access_token, mqttusername, hkey) =>
@@ -22,7 +22,7 @@ let compute_revoke_code = (access_token, hkey) =>
 netpie.getToken().then((token) => {
   let {oauth_token, oauth_token_secret, endpoint, flag} = token
   let hkey = compute_hkey(oauth_token_secret, appsecret)
-  let mqttusername = appkey;
+  let mqttusername = `${appkey}%${Math.floor(Date.now()/1000)}`;
   let mqttpassword = compute_mqtt_password(oauth_token, mqttusername, hkey)
   let revoke_code = compute_revoke_code(oauth_token, hkey)
 

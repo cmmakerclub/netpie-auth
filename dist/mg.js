@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.NetpieOAuth = undefined;
+exports.NetpieAuth = undefined;
 
 var _slicedToArray2 = require("babel-runtime/helpers/slicedToArray");
 
@@ -52,11 +52,11 @@ var verifier = MGREV;
 
 var STATE = _storage.CMMC_Storage.STATE;
 
-var NetpieOAuth = exports.NetpieOAuth = function () {
-  function NetpieOAuth(props) {
+var NetpieAuth = exports.NetpieAuth = function () {
+  function NetpieAuth(props) {
     var _this = this;
 
-    (0, _classCallCheck3.default)(this, NetpieOAuth);
+    (0, _classCallCheck3.default)(this, NetpieAuth);
     this._getRequestToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
       var req1_resp;
       return _regenerator2.default.wrap(function _callee$(_context) {
@@ -136,7 +136,6 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, oauth_token);
               _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, oauth_token_secret);
               _this._storage.set(_storage.CMMC_Storage.KEY_VERIFIER, verifier);
-
               _this._storage.commit();
 
               _context3.next = 16;
@@ -179,7 +178,7 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
     this._storage = new _storage.CMMC_Storage(this.appid);
   }
 
-  (0, _createClass3.default)(NetpieOAuth, [{
+  (0, _createClass3.default)(NetpieAuth, [{
     key: "getOAuthObject",
     value: function getOAuthObject() {
       return this.oauth;
@@ -273,5 +272,5 @@ var NetpieOAuth = exports.NetpieOAuth = function () {
       return ret;
     }
   }]);
-  return NetpieOAuth;
+  return NetpieAuth;
 }();
