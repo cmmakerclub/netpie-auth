@@ -3,9 +3,8 @@ let localStorage = require("node-localstorage").JSONStorage
 
 class IStorage {
   _storage = {}
-
   constructor () {
-    console.log("HELLO")
+
   }
 
   get (k) {
@@ -43,7 +42,7 @@ export class CMMC_Storage extends IStorage {
   static KEY_APP_SECRET = 0x0a
   static KEY_VERIFIER = 0x0b
 
-  constructor (name = 'tmp', open_now=true) {
+  constructor (name = 'tmp', open_now = true) {
     super();
     this._storage_driver = new localStorage('./' + name);
     this.load();
@@ -53,7 +52,7 @@ export class CMMC_Storage extends IStorage {
     }
   }
 
-  load() {
+  load () {
     this._storage = this._storage_driver.getItem("mg_cached");
   }
 

@@ -1,23 +1,23 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.CMMC_Storage = undefined;
 
-var _possibleConstructorReturn2 = require("babel-runtime/helpers/possibleConstructorReturn");
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = require("babel-runtime/helpers/inherits");
+var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require("babel-runtime/helpers/createClass");
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -29,22 +29,20 @@ var IStorage = function () {
   function IStorage() {
     (0, _classCallCheck3.default)(this, IStorage);
     this._storage = {};
-
-    console.log("HELLO");
   }
 
   (0, _createClass3.default)(IStorage, [{
-    key: "get",
+    key: 'get',
     value: function get(k) {
       return this._storage[k];
     }
   }, {
-    key: "set",
+    key: 'set',
     value: function set(k, v) {
       this._storage[k] = v;
     }
   }, {
-    key: "commit",
+    key: 'commit',
     value: function commit() {}
   }]);
   return IStorage;
@@ -74,12 +72,12 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
   }
 
   (0, _createClass3.default)(CMMC_Storage, [{
-    key: "load",
+    key: 'load',
     value: function load() {
       this._storage = this._storage_driver.getItem("mg_cached");
     }
   }, {
-    key: "commit",
+    key: 'commit',
     value: function commit() {
       this._storage_driver.setItem("mg_cached", this._storage);
     }
