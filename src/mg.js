@@ -46,17 +46,19 @@ export class NetpieAuth {
 
       let access_token = this._storage.get(CMMC_Storage.KEY_ACCESS_TOKEN)
       let access_token_secret = this._storage.get(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)
-      //
+      let endpoint = decodeURIComponent(this._storage.get(CMMC_Storage.KEY_ENDPOINT))
       let hkey = Util.compute_hkey(access_token_secret, appsecret)
       let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`;
       let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
       let revoke_code = Util.compute_revoke_code(access_token, hkey)
+      let [input, protocol, host, port] = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/)
+      let matched = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/)
       let ret = {
         username: mqttusername,
         password: mqttpassword,
         client_id: access_token,
-        appid,
-        prefix: `/${appid}/gearname/`
+        prefix: `/${appid}/gearname`,
+        appid, host, port, endpoint,
       }
 
       callback.call(null, ret);
@@ -64,7 +66,7 @@ export class NetpieAuth {
     }
     else {
       try {
-        let token = await this.getToken();
+        await this.getToken();
         return this.getMqttAuth();
       }
       catch (err) {
@@ -73,9 +75,9 @@ export class NetpieAuth {
     }
   }
 
-  getOAuthObject () {
-    return this.oauth;
-  }
+  // getOAuthObject () {
+  //   return this.oauth;
+  // }
 
   create (config) {
     this.oauth = OAuth({
@@ -140,6 +142,7 @@ export class NetpieAuth {
     });
     return req1_resp
   }
+
   _getAccessToken = async () => {
     this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
     let req2_resp = await this.build_request_object('/api/atoken')
@@ -149,9 +152,9 @@ export class NetpieAuth {
         key: this._storage.get(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
         secret: this._storage.get(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
       };
-      console.log("req_acc_token", request_data)
+      // console.log("req_acc_token", request_data)
+      // console.log("auth_header", auth_header)
       let auth_header = this.oauth.toHeader(this.oauth.authorize(request_data, _reqtok)).Authorization
-      console.log("auth_header", auth_header)
       return auth_header;
     })
     return req2_resp

@@ -15,11 +15,12 @@ try {
     var username = mqtt_auth_struct.username,
         password = mqtt_auth_struct.password,
         client_id = mqtt_auth_struct.client_id,
-        prefix = mqtt_auth_struct.prefix;
+        prefix = mqtt_auth_struct.prefix,
+        host = mqtt_auth_struct.host,
+        port = mqtt_auth_struct.port;
 
-    console.log(mqtt_auth_struct);
-    var command_t = 'mosquitto_sub -t "' + prefix + '/#" -h gb.netpie.io -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -d';
-    console.log(command_t);
+    console.log(host);
+    console.log('mosquitto_sub -t "' + prefix + '/#" -h ' + host + ' -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -p ' + port + ' -d');
   });
 } catch (err) {
   console.log("ERRR>>", err);

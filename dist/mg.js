@@ -5,13 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.NetpieAuth = undefined;
 
-var _slicedToArray2 = require("babel-runtime/helpers/slicedToArray");
-
-var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
-
 var _regenerator = require("babel-runtime/regenerator");
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _slicedToArray2 = require("babel-runtime/helpers/slicedToArray");
+
+var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
 var _asyncToGenerator2 = require("babel-runtime/helpers/asyncToGenerator");
 
@@ -68,13 +68,14 @@ var NetpieAuth = exports.NetpieAuth = function () {
 
     this.getMqttAuth = function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(callback) {
-        var appkey, appsecret, appid, access_token, access_token_secret, hkey, mqttusername, mqttpassword, revoke_code, ret, token;
+        var appkey, appsecret, appid, access_token, access_token_secret, endpoint, hkey, mqttusername, mqttpassword, revoke_code, _endpoint$match, _endpoint$match2, input, protocol, host, port, matched, ret;
+
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 if (!(_this._storage.get(_storage.CMMC_Storage.KEY_STATE) == STATE.STATE_ACCESS_TOKEN)) {
-                  _context.next = 14;
+                  _context.next = 17;
                   break;
                 }
 
@@ -83,46 +84,46 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 appid = _this.appid;
                 access_token = _this._storage.get(_storage.CMMC_Storage.KEY_ACCESS_TOKEN);
                 access_token_secret = _this._storage.get(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET);
-                //
-
+                endpoint = decodeURIComponent(_this._storage.get(_storage.CMMC_Storage.KEY_ENDPOINT));
                 hkey = Util.compute_hkey(access_token_secret, appsecret);
                 mqttusername = appkey + "%" + Math.floor(Date.now() / 1000);
                 mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey);
                 revoke_code = Util.compute_revoke_code(access_token, hkey);
+                _endpoint$match = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/), _endpoint$match2 = (0, _slicedToArray3.default)(_endpoint$match, 4), input = _endpoint$match2[0], protocol = _endpoint$match2[1], host = _endpoint$match2[2], port = _endpoint$match2[3];
+                matched = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/);
                 ret = {
                   username: mqttusername,
                   password: mqttpassword,
                   client_id: access_token,
-                  appid: appid,
-                  prefix: "/" + appid + "/gearname/"
+                  prefix: "/" + appid + "/gearname",
+                  appid: appid, host: host, port: port, endpoint: endpoint
                 };
 
 
                 callback.call(null, ret);
 
-                _context.next = 24;
+                _context.next = 26;
                 break;
 
-              case 14:
-                _context.prev = 14;
-                _context.next = 17;
+              case 17:
+                _context.prev = 17;
+                _context.next = 20;
                 return _this.getToken();
 
-              case 17:
-                token = _context.sent;
+              case 20:
                 return _context.abrupt("return", _this.getMqttAuth());
 
-              case 21:
-                _context.prev = 21;
-                _context.t0 = _context["catch"](14);
+              case 23:
+                _context.prev = 23;
+                _context.t0 = _context["catch"](17);
                 return _context.abrupt("return", null);
 
-              case 24:
+              case 26:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, _this, [[14, 21]]);
+        }, _callee, _this, [[17, 23]]);
       }));
 
       return function (_x) {
@@ -166,9 +167,9 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   key: _this._storage.get(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
                   secret: _this._storage.get(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
                 };
-                console.log("req_acc_token", request_data);
+                // console.log("req_acc_token", request_data)
+                // console.log("auth_header", auth_header)
                 var auth_header = _this.oauth.toHeader(_this.oauth.authorize(request_data, _reqtok)).Authorization;
-                console.log("auth_header", auth_header);
                 return auth_header;
               });
 
@@ -272,12 +273,13 @@ var NetpieAuth = exports.NetpieAuth = function () {
   }
 
   (0, _createClass3.default)(NetpieAuth, [{
-    key: "getOAuthObject",
-    value: function getOAuthObject() {
-      return this.oauth;
-    }
-  }, {
     key: "create",
+
+
+    // getOAuthObject () {
+    //   return this.oauth;
+    // }
+
     value: function create(config) {
       this.oauth = OAuth({
         consumer: {
