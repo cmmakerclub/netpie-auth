@@ -203,7 +203,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     };
 
     this.getToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
-      var req1_resp, _extract, oauth_token, oauth_token_secret, req2_resp, token2;
+      var req1_resp, _extract, oauth_token, oauth_token_secret, req2_resp, token;
 
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
@@ -239,21 +239,21 @@ var NetpieAuth = exports.NetpieAuth = function () {
 
             case 18:
               _context4.t3 = _context4.sent;
-              token2 = _context4.t2.extract.call(_context4.t2, _context4.t3);
+              token = _context4.t2.extract.call(_context4.t2, _context4.t3);
 
               _this._saveAccessToken({
-                oauth_token: token2.oauth_token,
-                oauth_token_secret: token2.oauth_token_secret,
-                endpoint: token2.endpoint,
-                flag: token2.flag
+                oauth_token: token.oauth_token,
+                oauth_token_secret: token.oauth_token_secret,
+                endpoint: token.endpoint,
+                flag: token.flag
               });
 
-              return _context4.abrupt("return", token2);
+              return _context4.abrupt("return", token);
 
             case 24:
               _context4.prev = 24;
               _context4.t4 = _context4["catch"](0);
-              return _context4.abrupt("return", false);
+              return _context4.abrupt("return", null);
 
             case 27:
             case "end":

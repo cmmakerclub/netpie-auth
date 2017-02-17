@@ -187,18 +187,18 @@ export class NetpieAuth {
 
       // STEP2: GET ACCESS TOKEN
       let req2_resp = await this._getAccessToken();
-      let token2 = this.extract(await req2_resp.text())
+      let token = this.extract(await req2_resp.text())
       this._saveAccessToken({
-        oauth_token: token2.oauth_token,
-        oauth_token_secret: token2.oauth_token_secret,
-        endpoint: token2.endpoint,
-        flag: token2.flag
+        oauth_token: token.oauth_token,
+        oauth_token_secret: token.oauth_token_secret,
+        endpoint: token.endpoint,
+        flag: token.flag
       })
 
-      return token2
+      return token
     }
     catch (ex) {
-      return false
+      return null
     }
   };
 }
