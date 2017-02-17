@@ -1,8 +1,6 @@
 import {
   NetpieAuth
-} from './mg'
-
-import './Util'
+} from './NetpieAuth'
 
 const appid = "Goose";
 const appkey = "AG6DU09xNIMGg9O";

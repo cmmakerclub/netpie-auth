@@ -1,14 +1,12 @@
-'use strict';
+"use strict";
 
-var _mg = require('./mg');
-
-require('./Util');
+var _NetpieAuth = require("./NetpieAuth");
 
 var appid = "Goose";
 var appkey = "AG6DU09xNIMGg9O";
 var appsecret = "dO19OpEZ6DECWjzNBAO4EgmSr";
 
-var netpie = new _mg.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
+var netpie = new _NetpieAuth.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
 
 try {
   netpie.getMqttAuth(function (mqtt_auth_struct) {
@@ -20,7 +18,7 @@ try {
         port = mqtt_auth_struct.port;
 
     console.log(host);
-    console.log('mosquitto_sub -t "' + prefix + '/#" -h ' + host + ' -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -p ' + port + ' -d');
+    console.log("mosquitto_sub -t \"" + prefix + "/#\" -h " + host + " -i " + client_id + " -u \"" + username + "\" -P \"" + password + "\" -p " + port + " -d");
   });
 } catch (err) {
   console.log("ERRR>>", err);
