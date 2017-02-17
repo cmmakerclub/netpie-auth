@@ -14,7 +14,9 @@ try {
     console.log(host);
     console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`);
   })
+
 }
 catch (err) {
+
   console.log("ERRR>>", err);
 }

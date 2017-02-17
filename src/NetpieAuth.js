@@ -3,18 +3,13 @@ var OAuth = require('oauth-1.0a');
 let CryptoJS = require("crypto-js");
 let fetch = require("node-fetch")
 let localStorage = require("node-localstorage").JSONStorage
+import {CMMC_Storage as Storage} from './storage'
 import * as Helper from './Util'
-
 let Util = Helper.Util
 
 const VERSION = '1.0.9';
 const GEARAPIADDRESS = 'ga.netpie.io';
 const GEARAPIPORT = '8080';
-const GEARAPISECUREPORT = '8081';
-const GBPORT = '1883';
-const GBSPORT = '8883';
-const USETLS = false;
-const securemode = false;
 
 
 const MGREV = 'NJS1a';
@@ -22,9 +17,6 @@ const MGREV = 'NJS1a';
 const gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 let verifier = MGREV;
 
-import {CMMC_Storage} from './storage'
-
-const STATE = CMMC_Storage.STATE
 
 export class NetpieAuth {
   constructor (props) {
@@ -34,19 +26,19 @@ export class NetpieAuth {
     this.appsecret = props.appsecret
     this.create(props)
     // initialize this._storage
-    this._storage = new CMMC_Storage(this.appid)
+    this._storage = new Storage(this.appid)
   }
 
 
   getMqttAuth = async (callback) => {
-    if (this._storage.get(CMMC_Storage.KEY_STATE) == STATE.STATE_ACCESS_TOKEN) {
+    if (this._storage.get(Storage.KEY_STATE) == Storage.STATE.STATE_ACCESS_TOKEN) {
       let appkey = this.appkey
       let appsecret = this.appsecret
       let appid = this.appid
 
-      let access_token = this._storage.get(CMMC_Storage.KEY_ACCESS_TOKEN)
-      let access_token_secret = this._storage.get(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)
-      let endpoint = decodeURIComponent(this._storage.get(CMMC_Storage.KEY_ENDPOINT))
+      let access_token = this._storage.get(Storage.KEY_ACCESS_TOKEN)
+      let access_token_secret = this._storage.get(Storage.KEY_ACCESS_TOKEN_SECRET)
+      let endpoint = decodeURIComponent(this._storage.get(Storage.KEY_ENDPOINT))
       let hkey = Util.compute_hkey(access_token_secret, appsecret)
       let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`;
       let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
@@ -60,9 +52,7 @@ export class NetpieAuth {
         prefix: `/${appid}/gearname`,
         appid, host, port, endpoint,
       }
-
       callback.call(null, ret);
-
     }
     else {
       try {
@@ -134,7 +124,7 @@ export class NetpieAuth {
   }
 
   _getRequestToken = async () => {
-    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+    this._storage.set(Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
     let req1_resp = await this.build_request_object('/api/rtoken')
     .data({oauth_callback: 'scope=&appid=' + "" + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
     .request((request_token) => {
@@ -144,13 +134,13 @@ export class NetpieAuth {
   }
 
   _getAccessToken = async () => {
-    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
     let req2_resp = await this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
     .request((request_data) => {
       let _reqtok = {
-        key: this._storage.get(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
-        secret: this._storage.get(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
+        key: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN),
+        secret: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
       };
       // console.log("req_acc_token", request_data)
       // console.log("auth_header", auth_header)
@@ -161,18 +151,18 @@ export class NetpieAuth {
   }
 
   _saveRequestToken = (object) => {
-    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
-    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
-    this._storage.set(CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
-    this._storage.set(CMMC_Storage.KEY_VERIFIER, object.verifier)
+    this._storage.set(Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+    this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
+    this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
+    this._storage.set(Storage.KEY_VERIFIER, object.verifier)
   }
 
   _saveAccessToken = (object) => {
-    this._storage.set(CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
-    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
-    this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
-    this._storage.set(CMMC_Storage.KEY_ENDPOINT, object.endpoint);
-    this._storage.set(CMMC_Storage.KEY_FLAG, object.flag);
+    this._storage.set(Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+    this._storage.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token);
+    this._storage.set(Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
+    this._storage.set(Storage.KEY_ENDPOINT, object.endpoint);
+    this._storage.set(Storage.KEY_FLAG, object.flag);
     // if done then serialize to storage
     this._storage.commit()
   }

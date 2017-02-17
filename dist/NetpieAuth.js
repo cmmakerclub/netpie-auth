@@ -25,11 +25,11 @@ var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
+var _storage = require("./storage");
+
 var _Util = require("./Util");
 
 var Helper = _interopRequireWildcard(_Util);
-
-var _storage = require("./storage");
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
@@ -41,24 +41,16 @@ var CryptoJS = require("crypto-js");
 var fetch = require("node-fetch");
 var localStorage = require("node-localstorage").JSONStorage;
 
-
 var Util = Helper.Util;
 
 var VERSION = '1.0.9';
 var GEARAPIADDRESS = 'ga.netpie.io';
 var GEARAPIPORT = '8080';
-var GEARAPISECUREPORT = '8081';
-var GBPORT = '1883';
-var GBSPORT = '8883';
-var USETLS = false;
-var securemode = false;
 
 var MGREV = 'NJS1a';
 
 var gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 var verifier = MGREV;
-
-var STATE = _storage.CMMC_Storage.STATE;
 
 var NetpieAuth = exports.NetpieAuth = function () {
   function NetpieAuth(props) {
@@ -74,7 +66,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(_this._storage.get(_storage.CMMC_Storage.KEY_STATE) == STATE.STATE_ACCESS_TOKEN)) {
+                if (!(_this._storage.get(_storage.CMMC_Storage.KEY_STATE) == _storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
                   _context.next = 17;
                   break;
                 }
@@ -99,9 +91,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   appid: appid, host: host, port: port, endpoint: endpoint
                 };
 
-
                 callback.call(null, ret);
-
                 _context.next = 26;
                 break;
 
@@ -160,7 +150,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              _this._storage.set(_storage.CMMC_Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+              _this._storage.set(_storage.CMMC_Storage.KEY_STATE, _storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
               _context3.next = 3;
               return _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
                 var _reqtok = {
