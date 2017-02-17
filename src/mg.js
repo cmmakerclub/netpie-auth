@@ -28,7 +28,7 @@ const STATE = CMMC_Storage.STATE
 
 export class NetpieAuth {
   constructor (props) {
-    console.log("props", props);
+    // console.log("props", props);
     this.appid = props.appid
     this.appkey = props.appkey
     this.appsecret = props.appsecret
@@ -38,10 +38,8 @@ export class NetpieAuth {
   }
 
 
-  getMqttAuth = async () => {
-    console.log("STATE = ", this._storage.get(CMMC_Storage.KEY_STATE))
+  getMqttAuth = async (callback) => {
     if (this._storage.get(CMMC_Storage.KEY_STATE) == STATE.STATE_ACCESS_TOKEN) {
-      console.log("HIT EQUAL");
       let appkey = this.appkey
       let appsecret = this.appsecret
       let appid = this.appid
@@ -53,8 +51,15 @@ export class NetpieAuth {
       let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`;
       let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
       let revoke_code = Util.compute_revoke_code(access_token, hkey)
-      let command_t = `mosquitto_sub -t "/${appid}/gearname/#" -h gb.netpie.io -i ${access_token} -u "${mqttusername}" -P "${mqttpassword}" -d`;
-      console.log(command_t)
+      let ret = {
+        username: mqttusername,
+        password: mqttpassword,
+        client_id: access_token,
+        appid,
+        prefix: `/${appid}/gearname/`
+      }
+
+      callback.call(null, ret);
 
     }
     else {
