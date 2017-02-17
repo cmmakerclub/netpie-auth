@@ -36,8 +36,6 @@ var IStorage = function () {
   (0, _createClass3.default)(IStorage, [{
     key: "get",
     value: function get(k) {
-
-      console.log("GET>>>", this._storage);
       return this._storage[k];
     }
   }, {
@@ -67,8 +65,9 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
     _this._storage_driver = null;
 
     _this._storage_driver = new localStorage('./' + name);
-    _this._storage_driver.setItem("mg_cached", _this._storage);
-    if (open_now) {
+    _this.load();
+    if (_this._storage === null) {
+      _this._storage_driver.setItem("mg_cached", {});
       _this.load();
     }
     return _this;

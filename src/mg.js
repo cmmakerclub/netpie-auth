@@ -3,7 +3,9 @@ var OAuth = require('oauth-1.0a');
 let CryptoJS = require("crypto-js");
 let fetch = require("node-fetch")
 let localStorage = require("node-localstorage").JSONStorage
-// let _storage = new localStorage('./data');
+import * as Helper from './Util'
+
+let Util = Helper.Util
 
 const VERSION = '1.0.9';
 const GEARAPIADDRESS = 'ga.netpie.io';
@@ -31,7 +33,39 @@ export class NetpieAuth {
     this.appkey = props.appkey
     this.appsecret = props.appsecret
     this.create(props)
+    // initialize this._storage
     this._storage = new CMMC_Storage(this.appid)
+  }
+
+
+  getMqttAuth = async () => {
+    console.log("STATE = ", this._storage.get(CMMC_Storage.KEY_STATE))
+    if (this._storage.get(CMMC_Storage.KEY_STATE) == STATE.STATE_ACCESS_TOKEN) {
+      console.log("HIT EQUAL");
+      let appkey = this.appkey
+      let appsecret = this.appsecret
+      let appid = this.appid
+
+      let access_token = this._storage.get(CMMC_Storage.KEY_ACCESS_TOKEN)
+      let access_token_secret = this._storage.get(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)
+      //
+      let hkey = Util.compute_hkey(access_token_secret, appsecret)
+      let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`;
+      let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
+      let revoke_code = Util.compute_revoke_code(access_token, hkey)
+      let command_t = `mosquitto_sub -t "/${appid}/gearname/#" -h gb.netpie.io -i ${access_token} -u "${mqttusername}" -P "${mqttpassword}" -d`;
+      console.log(command_t)
+
+    }
+    else {
+      try {
+        let token = await this.getToken();
+        return this.getMqttAuth();
+      }
+      catch (err) {
+        return null;
+      }
+    }
   }
 
   getOAuthObject () {
@@ -131,6 +165,8 @@ export class NetpieAuth {
     this._storage.set(CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
     this._storage.set(CMMC_Storage.KEY_ENDPOINT, object.endpoint);
     this._storage.set(CMMC_Storage.KEY_FLAG, object.flag);
+    // if done then serialize to storage
+    this._storage.commit()
   }
 
 
@@ -151,8 +187,6 @@ export class NetpieAuth {
         flag: token2.flag
       })
 
-      // if done then serialize to storage
-      this._storage.commit()
       return token2
     }
     catch (ex) {

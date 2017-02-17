@@ -9,8 +9,6 @@ class IStorage {
   }
 
   get (k) {
-
-    console.log("GET>>>", this._storage);
     return this._storage[k];
   }
 
@@ -48,8 +46,9 @@ export class CMMC_Storage extends IStorage {
   constructor (name = 'tmp', open_now=true) {
     super();
     this._storage_driver = new localStorage('./' + name);
-    this._storage_driver.setItem("mg_cached", this._storage);
-    if (open_now) {
+    this.load();
+    if (this._storage === null) {
+      this._storage_driver.setItem("mg_cached", {});
       this.load();
     }
   }
