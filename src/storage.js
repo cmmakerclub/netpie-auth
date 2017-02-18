@@ -1,8 +1,10 @@
 let localStorage = require("node-localstorage").JSONStorage
+let keyMirror = require('key-mirror');
 
 
 class IStorage {
   _storage = {}
+
   constructor () {
 
   }
@@ -19,8 +21,6 @@ class IStorage {
   }
 
 }
-
-var keyMirror = require('key-mirror');
 
 export class CMMC_Storage extends IStorage {
   _storage_driver = null
@@ -45,6 +45,7 @@ export class CMMC_Storage extends IStorage {
   constructor (name = 'tmp', open_now = true) {
     super();
     this._storage_driver = new localStorage('./' + name);
+
     this.load();
     if (this._storage === null) {
       this._storage_driver.setItem("mg_cached", {});

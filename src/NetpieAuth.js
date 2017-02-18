@@ -2,7 +2,6 @@ var OAuth = require('oauth-1.0a');
 
 let CryptoJS = require("crypto-js");
 let fetch = require("node-fetch")
-let localStorage = require("node-localstorage").JSONStorage
 import {CMMC_Storage as Storage} from './storage'
 import * as Helper from './Util'
 let Util = Helper.Util
@@ -20,7 +19,6 @@ let verifier = MGREV;
 
 export class NetpieAuth {
   constructor (props) {
-    // console.log("props", props);
     this.appid = props.appid
     this.appkey = props.appkey
     this.appsecret = props.appsecret
@@ -35,7 +33,6 @@ export class NetpieAuth {
       let appkey = this.appkey
       let appsecret = this.appsecret
       let appid = this.appid
-
       let access_token = this._storage.get(Storage.KEY_ACCESS_TOKEN)
       let access_token_secret = this._storage.get(Storage.KEY_ACCESS_TOKEN_SECRET)
       let endpoint = decodeURIComponent(this._storage.get(Storage.KEY_ENDPOINT))
@@ -49,25 +46,25 @@ export class NetpieAuth {
         username: mqttusername,
         password: mqttpassword,
         client_id: access_token,
+
         prefix: `/${appid}/gearname`,
         appid, host, port, endpoint,
       }
+      console.log(54, "callback = ", callback)
       callback.call(null, ret);
     }
     else {
       try {
         await this.getToken();
-        return this.getMqttAuth();
+        console.log(60)
+        return this.getMqttAuth(callback);
       }
       catch (err) {
+        console.log(64)
         return null;
       }
     }
   }
-
-  // getOAuthObject () {
-  //   return this.oauth;
-  // }
 
   create (config) {
     this.oauth = OAuth({
@@ -124,7 +121,7 @@ export class NetpieAuth {
   }
 
   _getRequestToken = async () => {
-    this._storage.set(Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
     let req1_resp = await this.build_request_object('/api/rtoken')
     .data({oauth_callback: 'scope=&appid=' + "" + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
     .request((request_token) => {
@@ -151,14 +148,14 @@ export class NetpieAuth {
   }
 
   _saveRequestToken = (object) => {
-    this._storage.set(Storage.KEY_STATE, STATE.STATE_REQ_TOKEN);
+    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
     this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
     this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
     this._storage.set(Storage.KEY_VERIFIER, object.verifier)
   }
 
   _saveAccessToken = (object) => {
-    this._storage.set(Storage.KEY_STATE, STATE.STATE_ACCESS_TOKEN);
+    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
     this._storage.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token);
     this._storage.set(Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
     this._storage.set(Storage.KEY_ENDPOINT, object.endpoint);
