@@ -3,12 +3,12 @@
 var _NetpieAuth = require("./NetpieAuth");
 
 var appid = "Goose";
-var appkey = "PuYksxVJSSAxnOT";
+var appkey = "xPuYksxVJSSAxnOT";
 var appsecret = "8cuZpXrYyIOquwtJRAzSNI8yc";
 
 var netpie = new _NetpieAuth.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
-
 console.log("initializing...");
+
 try {
   setTimeout(function () {
     netpie.getMqttAuth(function (mqtt_auth_struct) {

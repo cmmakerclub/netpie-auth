@@ -184,7 +184,7 @@ export class NetpieAuth {
       Util.log(`NetpieAuth.js ${this}`)
       // @flow STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
-      if (req1_resp.status == 200) {
+      if (req1_resp.ok) {
         let text = await req1_resp.text()
         let {oauth_token, oauth_token_secret} = this.extract(text);
         this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
@@ -200,13 +200,18 @@ export class NetpieAuth {
         })
       }
       else {
-        console.error(`${req1_resp.status} ${req1_resp.statusText}`)
+        let err = {
+          name: 'NetpieError',
+          type: 'Invalid AppKey or AppSecret',
+          message: `${req1_resp.status} ${req1_resp.statusText} (Invalid App/Secret Key)`
+        }
+        throw new Error(err.message)
       }
 
       return token
     }
     catch (ex) {
-      Util.log("ERROR", ex);
+      console.error(ex)
       return null
     }
   };

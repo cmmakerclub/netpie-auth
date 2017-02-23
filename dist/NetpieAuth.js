@@ -257,7 +257,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     };
 
     this.getToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
-      var token, req1_resp, text, _extract, oauth_token, oauth_token_secret, req2_resp, _token;
+      var token, req1_resp, text, _extract, oauth_token, oauth_token_secret, req2_resp, _token, err;
 
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
@@ -274,7 +274,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
             case 5:
               req1_resp = _context4.sent;
 
-              if (!(req1_resp.status == 200)) {
+              if (!req1_resp.ok) {
                 _context4.next = 23;
                 break;
               }
@@ -308,28 +308,33 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 endpoint: _token.endpoint,
                 flag: _token.flag
               });
-              _context4.next = 24;
+              _context4.next = 25;
               break;
 
             case 23:
-              console.error(req1_resp.status + " " + req1_resp.statusText);
+              err = {
+                name: 'NetpieError',
+                type: 'Invalid AppKey or AppSecret',
+                message: req1_resp.status + " " + req1_resp.statusText + " (Invalid App/Secret Key)"
+              };
+              throw new Error(err.message);
 
-            case 24:
+            case 25:
               return _context4.abrupt("return", token);
 
-            case 27:
-              _context4.prev = 27;
+            case 28:
+              _context4.prev = 28;
               _context4.t2 = _context4["catch"](1);
 
-              Util.log("ERROR", _context4.t2);
+              console.error(_context4.t2);
               return _context4.abrupt("return", null);
 
-            case 31:
+            case 32:
             case "end":
               return _context4.stop();
           }
         }
-      }, _callee4, _this, [[1, 27]]);
+      }, _callee4, _this, [[1, 28]]);
     }));
 
     this.appid = props.appid;

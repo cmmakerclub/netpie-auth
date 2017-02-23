@@ -3,12 +3,12 @@ import {
 } from './NetpieAuth'
 
 const appid = "Goose";
-const appkey = "PuYksxVJSSAxnOT";
+const appkey = "xPuYksxVJSSAxnOT";
 const appsecret = "8cuZpXrYyIOquwtJRAzSNI8yc";
 
 let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret});
-
 console.log("initializing...")
+
 try {
   setTimeout(() => {
     netpie.getMqttAuth((mqtt_auth_struct) => {
@@ -17,7 +17,6 @@ try {
       console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`);
     })
   }, 500)
-
 }
 catch (err) {
   console.error(err);
