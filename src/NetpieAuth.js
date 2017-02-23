@@ -17,6 +17,10 @@ const gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 let verifier = MGREV;
 
 
+let log = (msg) => {
+  console.log(msg);
+}
+
 export class NetpieAuth {
   constructor (props) {
     this.appid = props.appid
@@ -24,17 +28,22 @@ export class NetpieAuth {
     this.appsecret = props.appsecret
     this.create(props)
     // initialize this._storage
+    log("30")
     this._storage = new Storage(this.appid)
   }
 
 
   getMqttAuth = async (callback) => {
+    log(`getMqttAuth: `)
+    console.log(this._storage);
+    log("STATE = ", this._storage.get(Storage.KEY_STATE));
     if (this._storage.get(Storage.KEY_STATE) == Storage.STATE.STATE_ACCESS_TOKEN) {
-      let appkey = this.appkey
-      let appsecret = this.appsecret
-      let appid = this.appid
-      let access_token = this._storage.get(Storage.KEY_ACCESS_TOKEN)
-      let access_token_secret = this._storage.get(Storage.KEY_ACCESS_TOKEN_SECRET)
+      log(`STATE = ACCESS_TOKEN, RETRVING LAST VALUES...`)
+
+      let [appkey, appsecret, appid] = [this.appkey, this.appsecret, this.appid]
+      let [access_token, access_token_secret] = [this._storage.get(Storage.KEY_ACCESS_TOKEN),
+        this._storage.get(Storage.KEY_ACCESS_TOKEN_SECRET)]
+
       let endpoint = decodeURIComponent(this._storage.get(Storage.KEY_ENDPOINT))
       let hkey = Util.compute_hkey(access_token_secret, appsecret)
       let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`;
@@ -46,21 +55,28 @@ export class NetpieAuth {
         username: mqttusername,
         password: mqttpassword,
         client_id: access_token,
-
         prefix: `/${appid}/gearname`,
-        appid, host, port, endpoint,
+        appid: appid,
+        host: host,
+        port: port,
+        endpoint: endpoint
       }
-      console.log(54, "callback = ", callback)
-      callback.call(null, ret);
+      log(54, "callback = ", callback)
+      callback.apply(this, [ret]);
     }
     else {
       try {
+        log("calling getToken")
         await this.getToken();
-        console.log(60)
-        return this.getMqttAuth(callback);
+        log("getToken() done")
+        var that = this;
+        setTimeout(() => {
+          console.log("WAITING.. 2s")
+          return that.getMqttAuth(callback);
+        }, 2000)
       }
       catch (err) {
-        console.log(64)
+        log(64)
         return null;
       }
     }
@@ -121,7 +137,6 @@ export class NetpieAuth {
   }
 
   _getRequestToken = async () => {
-    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
     let req1_resp = await this.build_request_object('/api/rtoken')
     .data({oauth_callback: 'scope=&appid=' + "" + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
     .request((request_token) => {
@@ -131,7 +146,6 @@ export class NetpieAuth {
   }
 
   _getAccessToken = async () => {
-    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
     let req2_resp = await this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
     .request((request_data) => {
@@ -139,8 +153,6 @@ export class NetpieAuth {
         key: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN),
         secret: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
       };
-      // console.log("req_acc_token", request_data)
-      // console.log("auth_header", auth_header)
       let auth_header = this.oauth.toHeader(this.oauth.authorize(request_data, _reqtok)).Authorization
       return auth_header;
     })
@@ -148,18 +160,23 @@ export class NetpieAuth {
   }
 
   _saveRequestToken = (object) => {
+    log(`SET STATE= ${Storage.STATE.STATE_REQ_TOKEN}`)
+
     this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
     this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
     this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
     this._storage.set(Storage.KEY_VERIFIER, object.verifier)
+    log("DONE SAVE REQUEST_TOKEN")
   }
 
   _saveAccessToken = (object) => {
+    log(`SET STATE= ${Storage.STATE.STATE_ACCESS_TOKEN}`)
     this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
     this._storage.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token);
     this._storage.set(Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
     this._storage.set(Storage.KEY_ENDPOINT, object.endpoint);
     this._storage.set(Storage.KEY_FLAG, object.flag);
+    log("DONE save ACCESS TOKEN then commit...");
     // if done then serialize to storage
     this._storage.commit()
   }
@@ -167,12 +184,15 @@ export class NetpieAuth {
 
   getToken = async () => {
     try {
-      // STEP1: GET REQUEST TOKEN
+      console.log(`NetpieAuth.js ${this}`)
+      // @flow STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
       let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
+
+      console.log(`getToken => ${oauth_token}`)
       this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
 
-      // STEP2: GET ACCESS TOKEN
+      // @flow STEP2: GET ACCESS TOKEN
       let req2_resp = await this._getAccessToken();
       let token = this.extract(await req2_resp.text())
       this._saveAccessToken({
@@ -185,6 +205,7 @@ export class NetpieAuth {
       return token
     }
     catch (ex) {
+      console.log("ERROR", ex);
       return null
     }
   };

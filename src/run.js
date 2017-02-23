@@ -3,19 +3,21 @@ import {
 } from './NetpieAuth'
 
 const appid = "Goose";
-const appkey = "AG6DU09xNIMGg9O";
-const appsecret = "dO19OpEZ6DECWjzNBAO4EgmSr";
+const appkey = "PuYksxVJSSAxnOT";
+const appsecret = "8cuZpXrYyIOquwtJRAzSNI8yc";
 
 let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret});
 
 console.log("initializing...")
 try {
-  netpie.getMqttAuth((mqtt_auth_struct) => {
-    let {username, password, client_id, prefix, host, port} = mqtt_auth_struct;
-    console.log(host);
+  setTimeout(() => {
+    netpie.getMqttAuth((mqtt_auth_struct) => {
+      let {username, password, client_id, prefix, host, port} = mqtt_auth_struct;
+      console.log(host);
 
-    console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`);
-  })
+      console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`);
+    })
+  }, 500)
 
 }
 catch (err) {
