@@ -34,7 +34,6 @@ class MyStorage {
   getItem (key, func) {
     return this._private_storage.getItem(key);
   }
-
 }
 
 export class CMMC_Storage extends IStorage {

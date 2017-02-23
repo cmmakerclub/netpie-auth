@@ -22,18 +22,14 @@ export class NetpieAuth {
     this.appkey = props.appkey
     this.appsecret = props.appsecret
     this.create(props)
-    // initialize this._storage
-    Util.log("30")
     this._storage = new Storage(this.appid)
   }
 
 
   getMqttAuth = async (callback) => {
-    Util.log(`getMqttAuth: 37`)
-    Util.log("STATE = ", this._storage.get(Storage.KEY_STATE));
+    Util.log(`getMqttAuth: `, "STATE = ", this._storage.get(Storage.KEY_STATE));
     if (this._storage.get(Storage.KEY_STATE) == Storage.STATE.STATE_ACCESS_TOKEN) {
       Util.log(`STATE = ACCESS_TOKEN, RETRVING LAST VALUES...`)
-
       let [appkey, appsecret, appid] = [this.appkey, this.appsecret, this.appid]
       let [access_token, access_token_secret] = [this._storage.get(Storage.KEY_ACCESS_TOKEN),
         this._storage.get(Storage.KEY_ACCESS_TOKEN_SECRET)]
@@ -55,22 +51,15 @@ export class NetpieAuth {
         port: port,
         endpoint: endpoint
       }
-      Util.log(54, "callback = ", callback)
       callback.apply(this, [ret]);
     }
     else {
       try {
-        Util.log("calling getToken")
         await this.getToken();
-        Util.log("getToken() done")
-        var that = this;
-        setTimeout(() => {
-          Util.log("WAITING.. 2s")
-          return that.getMqttAuth(callback);
-        }, 2000)
+        return this.getMqttAuth(callback);
       }
       catch (err) {
-        Util.log(64)
+        Util.log("ERROR: getMqttAuth", err)
         return null;
       }
     }
@@ -131,16 +120,15 @@ export class NetpieAuth {
   }
 
   _getRequestToken = async () => {
-    let req1_resp = await this.build_request_object('/api/rtoken')
+    return await this.build_request_object('/api/rtoken')
     .data({oauth_callback: 'scope=&appid=' + "" + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
     .request((request_token) => {
       return this.oauth.toHeader(this.oauth.authorize(request_token)).Authorization
     });
-    return req1_resp
   }
 
   _getAccessToken = async () => {
-    let req2_resp = await this.build_request_object('/api/atoken')
+    return await this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
     .request((request_data) => {
       let _reqtok = {
@@ -150,27 +138,37 @@ export class NetpieAuth {
       let auth_header = this.oauth.toHeader(this.oauth.authorize(request_data, _reqtok)).Authorization
       return auth_header;
     })
-    return req2_resp
   }
 
   _saveRequestToken = (object) => {
     Util.log(`SET STATE= ${Storage.STATE.STATE_REQ_TOKEN}`)
-    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
-    this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
-    this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
-    this._storage.set(Storage.KEY_VERIFIER, object.verifier)
-    Util.log("DONE SAVE REQUEST_TOKEN")
+    let _data = new Map();
+
+    _data.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
+    _data.set(Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
+    _data.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
+    _data.set(Storage.KEY_VERIFIER, object.verifier)
+
+    for (let [key, value] of _data.entries()) {
+      Util.log("SAVE REQ TOKEN: KEY ", key, ">>", value)
+      this._storage.set(key, value)
+    }
   }
 
   _saveAccessToken = (object) => {
     Util.log(`SET STATE= ${Storage.STATE.STATE_ACCESS_TOKEN}`)
-    this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
-    this._storage.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token);
-    this._storage.set(Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
-    this._storage.set(Storage.KEY_ENDPOINT, object.endpoint);
-    this._storage.set(Storage.KEY_FLAG, object.flag);
+    let _data = new Map();
+    _data.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
+    _data.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token);
+    _data.set(Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
+    _data.set(Storage.KEY_ENDPOINT, object.endpoint);
+    _data.set(Storage.KEY_FLAG, object.flag);
+
+    for (let [key, value] of _data.entries()) {
+      Util.log("SAVE ACCESS TOKEN: KEY ", key, ">>", value)
+      this._storage.set(key, value)
+    }
     Util.log("DONE save ACCESS TOKEN then commit...");
-    // if done then serialize to storage
     this._storage.commit()
   }
 
@@ -181,8 +179,6 @@ export class NetpieAuth {
       // @flow STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
       let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
-
-      Util.log(`getToken => ${oauth_token}`)
       this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
 
       // @flow STEP2: GET ACCESS TOKEN
