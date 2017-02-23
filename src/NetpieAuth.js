@@ -185,6 +185,7 @@ export class NetpieAuth {
       // @flow STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
       if (req1_resp.status == 200) {
+        let text = await req1_resp.text()
         let {oauth_token, oauth_token_secret} = this.extract(text);
         this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
 

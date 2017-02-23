@@ -257,7 +257,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     };
 
     this.getToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
-      var token, req1_resp, _extract, oauth_token, oauth_token_secret, req2_resp, _token;
+      var token, req1_resp, text, _extract, oauth_token, oauth_token_secret, req2_resp, _token;
 
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
@@ -275,25 +275,30 @@ var NetpieAuth = exports.NetpieAuth = function () {
               req1_resp = _context4.sent;
 
               if (!(req1_resp.status == 200)) {
-                _context4.next = 20;
+                _context4.next = 23;
                 break;
               }
 
+              _context4.next = 9;
+              return req1_resp.text();
+
+            case 9:
+              text = _context4.sent;
               _extract = _this.extract(text), oauth_token = _extract.oauth_token, oauth_token_secret = _extract.oauth_token_secret;
 
               _this._saveRequestToken({ oauth_token: oauth_token, oauth_token_secret: oauth_token_secret, verifier: verifier });
 
               // @flow STEP2: GET ACCESS TOKEN
-              _context4.next = 11;
+              _context4.next = 14;
               return _this._getAccessToken();
 
-            case 11:
+            case 14:
               req2_resp = _context4.sent;
               _context4.t0 = _this;
-              _context4.next = 15;
+              _context4.next = 18;
               return req2_resp.text();
 
-            case 15:
+            case 18:
               _context4.t1 = _context4.sent;
               _token = _context4.t0.extract.call(_context4.t0, _context4.t1);
 
@@ -303,28 +308,28 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 endpoint: _token.endpoint,
                 flag: _token.flag
               });
-              _context4.next = 21;
+              _context4.next = 24;
               break;
 
-            case 20:
+            case 23:
               console.error(req1_resp.status + " " + req1_resp.statusText);
 
-            case 21:
+            case 24:
               return _context4.abrupt("return", token);
 
-            case 24:
-              _context4.prev = 24;
+            case 27:
+              _context4.prev = 27;
               _context4.t2 = _context4["catch"](1);
 
               Util.log("ERROR", _context4.t2);
               return _context4.abrupt("return", null);
 
-            case 28:
+            case 31:
             case "end":
               return _context4.stop();
           }
         }
-      }, _callee4, _this, [[1, 24]]);
+      }, _callee4, _this, [[1, 27]]);
     }));
 
     this.appid = props.appid;

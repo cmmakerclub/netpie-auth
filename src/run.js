@@ -3,7 +3,7 @@ import {
 } from './NetpieAuth'
 
 const appid = "Goose";
-const appkey = "qPuYksxVJSSAxnOT";
+const appkey = "PuYksxVJSSAxnOT";
 const appsecret = "8cuZpXrYyIOquwtJRAzSNI8yc";
 
 let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret});

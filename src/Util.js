@@ -1,8 +1,14 @@
 let CryptoJS = require("crypto-js");
 
 export let Util = {
+  debug: (...args) => {
+    console.log.apply(console, args)
+  },
+  info: (...args) => {
+    console.log.apply(console, args)
+  },
   log: (...args) => {
-    // console.log.apply(console, args)
+    console.log.apply(console, args)
   },
   base64: (text) => text.toString(CryptoJS.enc.Base64),
   hmac: (text, key) => Util.base64(CryptoJS.HmacSHA1(text, key)),
