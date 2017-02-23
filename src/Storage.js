@@ -42,6 +42,7 @@ export class CMMC_Storage extends IStorage {
   static STATE = keyMirror({
     STATE_REQ_TOKEN: null,
     STATE_ACCESS_TOKEN: null,
+    STATE_REVOKE_TOKEN: null,
   });
 
   static KEY_STATE = 0x01

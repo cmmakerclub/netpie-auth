@@ -4,9 +4,6 @@ export let Util = {
   debug: (...args) => {
     console.log.apply(console, args)
   },
-  info: (...args) => {
-    console.log.apply(console, args)
-  },
   log: (...args) => {
     console.log.apply(console, args)
   },

@@ -9,8 +9,6 @@ let Util = Helper.Util
 const VERSION = '1.0.9';
 const GEARAPIADDRESS = 'ga.netpie.io';
 const GEARAPIPORT = '8080';
-
-
 const MGREV = 'NJS1a';
 
 const gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
@@ -25,22 +23,19 @@ export class NetpieAuth {
     this._storage = new Storage(this.appid)
   }
 
-
   getMqttAuth = async (callback) => {
-    Util.log(`getMqttAuth: `, "STATE = ", this._storage.get(Storage.KEY_STATE));
     if (this._storage.get(Storage.KEY_STATE) == Storage.STATE.STATE_ACCESS_TOKEN) {
-      Util.log(`STATE = ACCESS_TOKEN, RETRVING LAST VALUES...`)
+      Util.log(`STATE = ACCESS_TOKEN`)
       let [appkey, appsecret, appid] = [this.appkey, this.appsecret, this.appid]
       let [access_token, access_token_secret] = [this._storage.get(Storage.KEY_ACCESS_TOKEN),
         this._storage.get(Storage.KEY_ACCESS_TOKEN_SECRET)]
 
       let endpoint = decodeURIComponent(this._storage.get(Storage.KEY_ENDPOINT))
       let hkey = Util.compute_hkey(access_token_secret, appsecret)
-      let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`;
+      let mqttusername = `${appkey}%${Math.floor(Date.now()/1000)}`;
       let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
       let revoke_code = Util.compute_revoke_code(access_token, hkey)
       let [input, protocol, host, port] = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/)
-      let matched = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/)
       let ret = {
         username: mqttusername,
         password: mqttpassword,
@@ -64,7 +59,7 @@ export class NetpieAuth {
         }
       }
       catch (err) {
-        Util.log("ERROR: getMqttAuth", err)
+        console.log(62, err)
         return null;
       }
     }
@@ -170,10 +165,8 @@ export class NetpieAuth {
     _data.set(Storage.KEY_FLAG, object.flag);
 
     for (let [key, value] of _data.entries()) {
-      Util.log("SAVE ACCESS TOKEN: KEY ", key, ">>", value)
       this._storage.set(key, value)
     }
-    Util.log("DONE save ACCESS TOKEN then commit...");
     this._storage.commit()
   }
 

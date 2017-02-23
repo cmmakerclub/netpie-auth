@@ -45,7 +45,6 @@ var Util = Helper.Util;
 var VERSION = '1.0.9';
 var GEARAPIADDRESS = 'ga.netpie.io';
 var GEARAPIPORT = '8080';
-
 var MGREV = 'NJS1a';
 
 var gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
@@ -59,20 +58,18 @@ var NetpieAuth = exports.NetpieAuth = function () {
 
     this.getMqttAuth = function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(callback) {
-        var _ref2, appkey, appsecret, appid, _ref3, access_token, access_token_secret, endpoint, hkey, mqttusername, mqttpassword, revoke_code, _endpoint$match, _endpoint$match2, input, protocol, host, port, matched, ret, token;
+        var _ref2, appkey, appsecret, appid, _ref3, access_token, access_token_secret, endpoint, hkey, mqttusername, mqttpassword, revoke_code, _endpoint$match, _endpoint$match2, input, protocol, host, port, ret, token;
 
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                Util.log("getMqttAuth: ", "STATE = ", _this._storage.get(_Storage.CMMC_Storage.KEY_STATE));
-
                 if (!(_this._storage.get(_Storage.CMMC_Storage.KEY_STATE) == _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
-                  _context.next = 16;
+                  _context.next = 14;
                   break;
                 }
 
-                Util.log("STATE = ACCESS_TOKEN, RETRVING LAST VALUES...");
+                Util.log("STATE = ACCESS_TOKEN");
                 _ref2 = [_this.appkey, _this.appsecret, _this.appid], appkey = _ref2[0], appsecret = _ref2[1], appid = _ref2[2];
                 _ref3 = [_this._storage.get(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN), _this._storage.get(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)], access_token = _ref3[0], access_token_secret = _ref3[1];
                 endpoint = decodeURIComponent(_this._storage.get(_Storage.CMMC_Storage.KEY_ENDPOINT));
@@ -81,7 +78,6 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey);
                 revoke_code = Util.compute_revoke_code(access_token, hkey);
                 _endpoint$match = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/), _endpoint$match2 = (0, _slicedToArray3.default)(_endpoint$match, 4), input = _endpoint$match2[0], protocol = _endpoint$match2[1], host = _endpoint$match2[2], port = _endpoint$match2[3];
-                matched = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/);
                 ret = {
                   username: mqttusername,
                   password: mqttpassword,
@@ -94,44 +90,44 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 };
 
                 callback.apply(_this, [ret]);
-                _context.next = 31;
+                _context.next = 29;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.next = 19;
+              case 14:
+                _context.prev = 14;
+                _context.next = 17;
                 return _this.getToken();
 
-              case 19:
+              case 17:
                 token = _context.sent;
 
                 if (!(token !== null)) {
-                  _context.next = 24;
+                  _context.next = 22;
                   break;
                 }
 
                 return _context.abrupt("return", _this.getMqttAuth(callback));
 
-              case 24:
+              case 22:
                 return _context.abrupt("return", null);
 
-              case 25:
-                _context.next = 31;
+              case 23:
+                _context.next = 29;
                 break;
 
-              case 27:
-                _context.prev = 27;
-                _context.t0 = _context["catch"](16);
+              case 25:
+                _context.prev = 25;
+                _context.t0 = _context["catch"](14);
 
-                Util.log("ERROR: getMqttAuth", _context.t0);
+                console.log(62, _context.t0);
                 return _context.abrupt("return", null);
 
-              case 31:
+              case 29:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, _this, [[16, 27]]);
+        }, _callee, _this, [[14, 25]]);
       }));
 
       return function (_x) {
@@ -234,7 +230,6 @@ var NetpieAuth = exports.NetpieAuth = function () {
               key = _step2$value[0],
               value = _step2$value[1];
 
-          Util.log("SAVE ACCESS TOKEN: KEY ", key, ">>", value);
           _this._storage.set(key, value);
         }
       } catch (err) {
@@ -252,7 +247,6 @@ var NetpieAuth = exports.NetpieAuth = function () {
         }
       }
 
-      Util.log("DONE save ACCESS TOKEN then commit...");
       _this._storage.commit();
     };
 

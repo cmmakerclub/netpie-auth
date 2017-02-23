@@ -13,16 +13,9 @@ var Util = exports.Util = {
 
     console.log.apply(console, args);
   },
-  info: function info() {
+  log: function log() {
     for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
       args[_key2] = arguments[_key2];
-    }
-
-    console.log.apply(console, args);
-  },
-  log: function log() {
-    for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-      args[_key3] = arguments[_key3];
     }
 
     console.log.apply(console, args);

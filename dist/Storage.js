@@ -112,7 +112,8 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
 
 CMMC_Storage.STATE = keyMirror({
   STATE_REQ_TOKEN: null,
-  STATE_ACCESS_TOKEN: null
+  STATE_ACCESS_TOKEN: null,
+  STATE_REVOKE_TOKEN: null
 });
 CMMC_Storage.KEY_STATE = 0x01;
 CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN = 0x02;
