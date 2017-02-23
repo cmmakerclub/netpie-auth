@@ -1,6 +1,9 @@
 let CryptoJS = require("crypto-js");
 
 export let Util = {
+  log: (text) => {
+    console.log(text);
+  },
   base64: (text) => text.toString(CryptoJS.enc.Base64),
   hmac: (text, key) => Util.base64(CryptoJS.HmacSHA1(text, key)),
   compute_hkey: (access_token_secret, app_secret) => `${access_token_secret}&${app_secret}`,

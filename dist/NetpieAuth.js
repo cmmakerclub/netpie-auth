@@ -25,7 +25,7 @@ var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _storage = require("./storage");
+var _Storage = require("./Storage");
 
 var _Util = require("./Util");
 
@@ -51,10 +51,6 @@ var MGREV = 'NJS1a';
 var gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 var verifier = MGREV;
 
-var log = function log(msg) {
-  console.log(msg);
-};
-
 var NetpieAuth = exports.NetpieAuth = function () {
   function NetpieAuth(props) {
     var _this = this;
@@ -69,20 +65,19 @@ var NetpieAuth = exports.NetpieAuth = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                log("getMqttAuth: ");
-                console.log(_this._storage);
-                log("STATE = ", _this._storage.get(_storage.CMMC_Storage.KEY_STATE));
+                Util.log("getMqttAuth: 37");
+                Util.log("STATE = ", _this._storage.get(_Storage.CMMC_Storage.KEY_STATE));
 
-                if (!(_this._storage.get(_storage.CMMC_Storage.KEY_STATE) == _storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
-                  _context.next = 19;
+                if (!(_this._storage.get(_Storage.CMMC_Storage.KEY_STATE) == _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
+                  _context.next = 18;
                   break;
                 }
 
-                log("STATE = ACCESS_TOKEN, RETRVING LAST VALUES...");
+                Util.log("STATE = ACCESS_TOKEN, RETRVING LAST VALUES...");
 
                 _ref2 = [_this.appkey, _this.appsecret, _this.appid], appkey = _ref2[0], appsecret = _ref2[1], appid = _ref2[2];
-                _ref3 = [_this._storage.get(_storage.CMMC_Storage.KEY_ACCESS_TOKEN), _this._storage.get(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)], access_token = _ref3[0], access_token_secret = _ref3[1];
-                endpoint = decodeURIComponent(_this._storage.get(_storage.CMMC_Storage.KEY_ENDPOINT));
+                _ref3 = [_this._storage.get(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN), _this._storage.get(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)], access_token = _ref3[0], access_token_secret = _ref3[1];
+                endpoint = decodeURIComponent(_this._storage.get(_Storage.CMMC_Storage.KEY_ENDPOINT));
                 hkey = Util.compute_hkey(access_token_secret, appsecret);
                 mqttusername = appkey + "%" + Math.floor(Date.now() / 1000);
                 mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey);
@@ -100,42 +95,42 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   endpoint: endpoint
                 };
 
-                log(54, "callback = ", callback);
+                Util.log(54, "callback = ", callback);
                 callback.apply(_this, [ret]);
-                _context.next = 32;
+                _context.next = 31;
                 break;
 
-              case 19:
-                _context.prev = 19;
+              case 18:
+                _context.prev = 18;
 
-                log("calling getToken");
-                _context.next = 23;
+                Util.log("calling getToken");
+                _context.next = 22;
                 return _this.getToken();
 
-              case 23:
-                log("getToken() done");
+              case 22:
+                Util.log("getToken() done");
                 that = _this;
 
                 setTimeout(function () {
-                  console.log("WAITING.. 2s");
+                  Util.log("WAITING.. 2s");
                   return that.getMqttAuth(callback);
                 }, 2000);
-                _context.next = 32;
+                _context.next = 31;
                 break;
 
-              case 28:
-                _context.prev = 28;
-                _context.t0 = _context["catch"](19);
+              case 27:
+                _context.prev = 27;
+                _context.t0 = _context["catch"](18);
 
-                log(64);
+                Util.log(64);
                 return _context.abrupt("return", null);
 
-              case 32:
+              case 31:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, _this, [[19, 28]]);
+        }, _callee, _this, [[18, 27]]);
       }));
 
       return function (_x) {
@@ -174,8 +169,8 @@ var NetpieAuth = exports.NetpieAuth = function () {
               _context3.next = 2;
               return _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
                 var _reqtok = {
-                  key: _this._storage.get(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
-                  secret: _this._storage.get(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
+                  key: _this._storage.get(_Storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
+                  secret: _this._storage.get(_Storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
                 };
                 var auth_header = _this.oauth.toHeader(_this.oauth.authorize(request_data, _reqtok)).Authorization;
                 return auth_header;
@@ -194,23 +189,22 @@ var NetpieAuth = exports.NetpieAuth = function () {
     }));
 
     this._saveRequestToken = function (object) {
-      log("SET STATE= " + _storage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
-
-      _this._storage.set(_storage.CMMC_Storage.KEY_STATE, _storage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
-      _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
-      _this._storage.set(_storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
-      _this._storage.set(_storage.CMMC_Storage.KEY_VERIFIER, object.verifier);
-      log("DONE SAVE REQUEST_TOKEN");
+      Util.log("SET STATE= " + _Storage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_STATE, _Storage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_VERIFIER, object.verifier);
+      Util.log("DONE SAVE REQUEST_TOKEN");
     };
 
     this._saveAccessToken = function (object) {
-      log("SET STATE= " + _storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
-      _this._storage.set(_storage.CMMC_Storage.KEY_STATE, _storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
-      _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
-      _this._storage.set(_storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
-      _this._storage.set(_storage.CMMC_Storage.KEY_ENDPOINT, object.endpoint);
-      _this._storage.set(_storage.CMMC_Storage.KEY_FLAG, object.flag);
-      log("DONE save ACCESS TOKEN then commit...");
+      Util.log("SET STATE= " + _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_STATE, _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_ENDPOINT, object.endpoint);
+      _this._storage.set(_Storage.CMMC_Storage.KEY_FLAG, object.flag);
+      Util.log("DONE save ACCESS TOKEN then commit...");
       // if done then serialize to storage
       _this._storage.commit();
     };
@@ -224,7 +218,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
             case 0:
               _context4.prev = 0;
 
-              console.log("NetpieAuth.js " + _this);
+              Util.log("NetpieAuth.js " + _this);
               // @flow STEP1: GET REQUEST TOKEN
               _context4.next = 4;
               return _this._getRequestToken();
@@ -242,7 +236,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               oauth_token_secret = _extract.oauth_token_secret;
 
 
-              console.log("getToken => " + oauth_token);
+              Util.log("getToken => " + oauth_token);
               _this._saveRequestToken({ oauth_token: oauth_token, oauth_token_secret: oauth_token_secret, verifier: verifier });
 
               // @flow STEP2: GET ACCESS TOKEN
@@ -272,7 +266,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               _context4.prev = 26;
               _context4.t4 = _context4["catch"](0);
 
-              console.log("ERROR", _context4.t4);
+              Util.log("ERROR", _context4.t4);
               return _context4.abrupt("return", null);
 
             case 30:
@@ -288,8 +282,8 @@ var NetpieAuth = exports.NetpieAuth = function () {
     this.appsecret = props.appsecret;
     this.create(props);
     // initialize this._storage
-    log("30");
-    this._storage = new _storage.CMMC_Storage(this.appid);
+    Util.log("30");
+    this._storage = new _Storage.CMMC_Storage(this.appid);
   }
 
   (0, _createClass3.default)(NetpieAuth, [{

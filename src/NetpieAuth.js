@@ -2,7 +2,7 @@ var OAuth = require('oauth-1.0a');
 
 let CryptoJS = require("crypto-js");
 let fetch = require("node-fetch")
-import {CMMC_Storage as Storage} from './storage'
+import {CMMC_Storage as Storage} from './Storage'
 import * as Helper from './Util'
 let Util = Helper.Util
 
@@ -16,11 +16,6 @@ const MGREV = 'NJS1a';
 const gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 let verifier = MGREV;
 
-
-let log = (msg) => {
-  console.log(msg);
-}
-
 export class NetpieAuth {
   constructor (props) {
     this.appid = props.appid
@@ -28,17 +23,16 @@ export class NetpieAuth {
     this.appsecret = props.appsecret
     this.create(props)
     // initialize this._storage
-    log("30")
+    Util.log("30")
     this._storage = new Storage(this.appid)
   }
 
 
   getMqttAuth = async (callback) => {
-    log(`getMqttAuth: `)
-    console.log(this._storage);
-    log("STATE = ", this._storage.get(Storage.KEY_STATE));
+    Util.log(`getMqttAuth: 37`)
+    Util.log("STATE = ", this._storage.get(Storage.KEY_STATE));
     if (this._storage.get(Storage.KEY_STATE) == Storage.STATE.STATE_ACCESS_TOKEN) {
-      log(`STATE = ACCESS_TOKEN, RETRVING LAST VALUES...`)
+      Util.log(`STATE = ACCESS_TOKEN, RETRVING LAST VALUES...`)
 
       let [appkey, appsecret, appid] = [this.appkey, this.appsecret, this.appid]
       let [access_token, access_token_secret] = [this._storage.get(Storage.KEY_ACCESS_TOKEN),
@@ -61,22 +55,22 @@ export class NetpieAuth {
         port: port,
         endpoint: endpoint
       }
-      log(54, "callback = ", callback)
+      Util.log(54, "callback = ", callback)
       callback.apply(this, [ret]);
     }
     else {
       try {
-        log("calling getToken")
+        Util.log("calling getToken")
         await this.getToken();
-        log("getToken() done")
+        Util.log("getToken() done")
         var that = this;
         setTimeout(() => {
-          console.log("WAITING.. 2s")
+          Util.log("WAITING.. 2s")
           return that.getMqttAuth(callback);
         }, 2000)
       }
       catch (err) {
-        log(64)
+        Util.log(64)
         return null;
       }
     }
@@ -160,23 +154,22 @@ export class NetpieAuth {
   }
 
   _saveRequestToken = (object) => {
-    log(`SET STATE= ${Storage.STATE.STATE_REQ_TOKEN}`)
-
+    Util.log(`SET STATE= ${Storage.STATE.STATE_REQ_TOKEN}`)
     this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
     this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
     this._storage.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
     this._storage.set(Storage.KEY_VERIFIER, object.verifier)
-    log("DONE SAVE REQUEST_TOKEN")
+    Util.log("DONE SAVE REQUEST_TOKEN")
   }
 
   _saveAccessToken = (object) => {
-    log(`SET STATE= ${Storage.STATE.STATE_ACCESS_TOKEN}`)
+    Util.log(`SET STATE= ${Storage.STATE.STATE_ACCESS_TOKEN}`)
     this._storage.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
     this._storage.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token);
     this._storage.set(Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
     this._storage.set(Storage.KEY_ENDPOINT, object.endpoint);
     this._storage.set(Storage.KEY_FLAG, object.flag);
-    log("DONE save ACCESS TOKEN then commit...");
+    Util.log("DONE save ACCESS TOKEN then commit...");
     // if done then serialize to storage
     this._storage.commit()
   }
@@ -184,12 +177,12 @@ export class NetpieAuth {
 
   getToken = async () => {
     try {
-      console.log(`NetpieAuth.js ${this}`)
+      Util.log(`NetpieAuth.js ${this}`)
       // @flow STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
       let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
 
-      console.log(`getToken => ${oauth_token}`)
+      Util.log(`getToken => ${oauth_token}`)
       this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
 
       // @flow STEP2: GET ACCESS TOKEN
@@ -205,7 +198,7 @@ export class NetpieAuth {
       return token
     }
     catch (ex) {
-      console.log("ERROR", ex);
+      Util.log("ERROR", ex);
       return null
     }
   };

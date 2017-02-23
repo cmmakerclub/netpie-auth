@@ -1,23 +1,23 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.CMMC_Storage = undefined;
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _possibleConstructorReturn2 = require("babel-runtime/helpers/possibleConstructorReturn");
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+var _inherits2 = require("babel-runtime/helpers/inherits");
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
@@ -26,6 +26,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var localStorage = require("node-localstorage").LocalStorage;
 var keyMirror = require('key-mirror');
 
+var CACHE_KEY = "mg_cached";
+
 var IStorage = function () {
   function IStorage() {
     (0, _classCallCheck3.default)(this, IStorage);
@@ -33,17 +35,17 @@ var IStorage = function () {
   }
 
   (0, _createClass3.default)(IStorage, [{
-    key: 'get',
+    key: "get",
     value: function get(k) {
       return this._storage[k];
     }
   }, {
-    key: 'set',
+    key: "set",
     value: function set(k, v) {
       this._storage[k] = v;
     }
   }, {
-    key: 'commit',
+    key: "commit",
     value: function commit() {}
   }]);
   return IStorage;
@@ -57,13 +59,12 @@ var MyStorage = function () {
   }
 
   (0, _createClass3.default)(MyStorage, [{
-    key: 'setItem',
+    key: "setItem",
     value: function setItem(key, value) {
-      console.log('"setitem" ' + key);
       return this._private_storage.setItem(key, value);
     }
   }, {
-    key: 'getItem',
+    key: "getItem",
     value: function getItem(key, func) {
       return this._private_storage.getItem(key);
     }
@@ -90,18 +91,18 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
   }
 
   (0, _createClass3.default)(CMMC_Storage, [{
-    key: 'load',
+    key: "load",
     value: function load() {
-      var loaded = this._storage_driver.getItem("mg_cached");
+      var loaded = this._storage_driver.getItem(CACHE_KEY);
       this._storage = JSON.parse(loaded);
       if (this._storage == null) {
         this._storage = {};
       }
     }
   }, {
-    key: 'commit',
+    key: "commit",
     value: function commit() {
-      this._storage_driver.setItem("mg_cached", JSON.stringify(this._storage));
+      this._storage_driver.setItem(CACHE_KEY, JSON.stringify(this._storage));
     }
   }]);
   return CMMC_Storage;

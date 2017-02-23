@@ -1,6 +1,7 @@
 let localStorage = require("node-localstorage").LocalStorage
 let keyMirror = require('key-mirror');
 
+const CACHE_KEY = "mg_cached"
 
 class IStorage {
   _storage = {}
@@ -27,7 +28,6 @@ class MyStorage {
   }
 
   setItem (key, value) {
-    console.log(`"setitem" ${key}`)
     return this._private_storage.setItem(key, value);
   }
 
@@ -39,7 +39,7 @@ class MyStorage {
 
 export class CMMC_Storage extends IStorage {
   _storage_driver = null
-  
+
   static STATE = keyMirror({
     STATE_REQ_TOKEN: null,
     STATE_ACCESS_TOKEN: null,
@@ -59,13 +59,13 @@ export class CMMC_Storage extends IStorage {
 
   constructor (name = 'tmp', open_now = true) {
     super();
-    this._storage = { }
+    this._storage = {}
     this._storage_driver = new MyStorage(name);
     this.load();
   }
 
   load () {
-    let loaded = this._storage_driver.getItem("mg_cached");
+    let loaded = this._storage_driver.getItem(CACHE_KEY);
     this._storage = JSON.parse(loaded)
     if (this._storage == null) {
       this._storage = {};
@@ -73,6 +73,6 @@ export class CMMC_Storage extends IStorage {
   }
 
   commit () {
-    this._storage_driver.setItem("mg_cached", JSON.stringify(this._storage));
+    this._storage_driver.setItem(CACHE_KEY, JSON.stringify(this._storage));
   }
 }

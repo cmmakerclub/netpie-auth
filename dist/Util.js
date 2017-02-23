@@ -6,6 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 var CryptoJS = require("crypto-js");
 
 var Util = exports.Util = {
+  log: function log(text) {
+    console.log(text);
+  },
   base64: function base64(text) {
     return text.toString(CryptoJS.enc.Base64);
   },
