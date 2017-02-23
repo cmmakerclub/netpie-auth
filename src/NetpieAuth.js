@@ -24,7 +24,7 @@ export class NetpieAuth {
   }
 
   getMqttAuth = async (callback) => {
-    if (this._storage.get(Storage.KEY_STATE) == Storage.STATE.STATE_ACCESS_TOKEN) {
+    if (this._storage.get(Storage.KEY_STATE) === Storage.STATE.STATE_ACCESS_TOKEN) {
       Util.log(`STATE = ACCESS_TOKEN`)
       let [appkey, appsecret, appid] = [this.appkey, this.appsecret, this.appid]
       let [access_token, access_token_secret] = [this._storage.get(Storage.KEY_ACCESS_TOKEN),
@@ -81,23 +81,21 @@ export class NetpieAuth {
 
   extract (response) {
     let arr = response.split('&');
-    let reduced = arr.reduce((acc, v) => {
+    return arr.reduce((acc, v) => {
       let [key, value] = v.split("=");
       acc[key] = value;
       return acc;
     }, {});
-    return reduced;
   }
 
   async request (data, auth_func) {
-    let ret = fetch(data.url, {
+    return fetch(data.url, {
       method: data.method,
       timeout: 5000,
       headers: {
         'Authorization': auth_func.apply(this, [data]),
       }
     });
-    return ret;
   }
 
   build_request_object (uri, method = 'POST') {
@@ -161,9 +159,9 @@ export class NetpieAuth {
     _data.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN);
     _data.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token);
     _data.set(Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
+    _data.set(Storage.KEY_REVOKE_TOKEN, object.revoke_token);
     _data.set(Storage.KEY_ENDPOINT, object.endpoint);
     _data.set(Storage.KEY_FLAG, object.flag);
-
     for (let [key, value] of _data.entries()) {
       this._storage.set(key, value)
     }
@@ -185,11 +183,14 @@ export class NetpieAuth {
         // @flow STEP2: GET ACCESS TOKEN
         let req2_resp = await this._getAccessToken();
         let token = this.extract(await req2_resp.text())
+        let hkey = Util.compute_hkey(oauth_token_secret, this.appsecret)
+        let revoke_token = Util.compute_revoke_code(oauth_token, hkey)
         this._saveAccessToken({
           oauth_token: token.oauth_token,
           oauth_token_secret: token.oauth_token_secret,
           endpoint: token.endpoint,
-          flag: token.flag
+          flag: token.flag,
+          revoke_token
         })
       }
       else {

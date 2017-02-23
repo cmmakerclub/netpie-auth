@@ -64,7 +64,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(_this._storage.get(_Storage.CMMC_Storage.KEY_STATE) == _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
+                if (!(_this._storage.get(_Storage.CMMC_Storage.KEY_STATE) === _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
                   _context.next = 14;
                   break;
                 }
@@ -217,9 +217,9 @@ var NetpieAuth = exports.NetpieAuth = function () {
       _data.set(_Storage.CMMC_Storage.KEY_STATE, _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
       _data.set(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
       _data.set(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET, object.oauth_token_secret);
+      _data.set(_Storage.CMMC_Storage.KEY_REVOKE_TOKEN, object.revoke_token);
       _data.set(_Storage.CMMC_Storage.KEY_ENDPOINT, object.endpoint);
       _data.set(_Storage.CMMC_Storage.KEY_FLAG, object.flag);
-
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
       var _iteratorError2 = undefined;
@@ -251,7 +251,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     };
 
     this.getToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
-      var token, req1_resp, text, _extract, oauth_token, oauth_token_secret, req2_resp, _token, err;
+      var token, req1_resp, text, _extract, oauth_token, oauth_token_secret, req2_resp, _token, hkey, revoke_token, err;
 
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
@@ -269,7 +269,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               req1_resp = _context4.sent;
 
               if (!req1_resp.ok) {
-                _context4.next = 23;
+                _context4.next = 25;
                 break;
               }
 
@@ -295,17 +295,20 @@ var NetpieAuth = exports.NetpieAuth = function () {
             case 18:
               _context4.t1 = _context4.sent;
               _token = _context4.t0.extract.call(_context4.t0, _context4.t1);
+              hkey = Util.compute_hkey(oauth_token_secret, _this.appsecret);
+              revoke_token = Util.compute_revoke_code(oauth_token, hkey);
 
               _this._saveAccessToken({
                 oauth_token: _token.oauth_token,
                 oauth_token_secret: _token.oauth_token_secret,
                 endpoint: _token.endpoint,
-                flag: _token.flag
+                flag: _token.flag,
+                revoke_token: revoke_token
               });
-              _context4.next = 25;
+              _context4.next = 27;
               break;
 
-            case 23:
+            case 25:
               err = {
                 name: 'NetpieError',
                 type: 'Invalid AppKey or AppSecret',
@@ -313,22 +316,22 @@ var NetpieAuth = exports.NetpieAuth = function () {
               };
               throw new Error(err.message);
 
-            case 25:
+            case 27:
               return _context4.abrupt("return", token);
 
-            case 28:
-              _context4.prev = 28;
+            case 30:
+              _context4.prev = 30;
               _context4.t2 = _context4["catch"](1);
 
               console.error(_context4.t2);
               return _context4.abrupt("return", null);
 
-            case 32:
+            case 34:
             case "end":
               return _context4.stop();
           }
         }
-      }, _callee4, _this, [[1, 28]]);
+      }, _callee4, _this, [[1, 30]]);
     }));
 
     this.appid = props.appid;
@@ -357,7 +360,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     key: "extract",
     value: function extract(response) {
       var arr = response.split('&');
-      var reduced = arr.reduce(function (acc, v) {
+      return arr.reduce(function (acc, v) {
         var _v$split = v.split("="),
             _v$split2 = (0, _slicedToArray3.default)(_v$split, 2),
             key = _v$split2[0],
@@ -366,27 +369,24 @@ var NetpieAuth = exports.NetpieAuth = function () {
         acc[key] = value;
         return acc;
       }, {});
-      return reduced;
     }
   }, {
     key: "request",
     value: function () {
       var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(data, auth_func) {
-        var ret;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                ret = fetch(data.url, {
+                return _context5.abrupt("return", fetch(data.url, {
                   method: data.method,
                   timeout: 5000,
                   headers: {
                     'Authorization': auth_func.apply(this, [data])
                   }
-                });
-                return _context5.abrupt("return", ret);
+                }));
 
-              case 2:
+              case 1:
               case "end":
                 return _context5.stop();
             }
