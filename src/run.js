@@ -3,7 +3,7 @@ import {
 } from './NetpieAuth'
 
 const appid = "Goose";
-const appkey = "PuYksxVJSSAxnOT";
+const appkey = "qPuYksxVJSSAxnOT";
 const appsecret = "8cuZpXrYyIOquwtJRAzSNI8yc";
 
 let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret});
@@ -20,5 +20,5 @@ try {
 
 }
 catch (err) {
-  console.log("ERRR>>", err);
+  console.error(err);
 }

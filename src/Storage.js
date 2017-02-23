@@ -56,7 +56,7 @@ export class CMMC_Storage extends IStorage {
   static KEY_APP_SECRET = 0x0a
   static KEY_VERIFIER = 0x0b
 
-  constructor (name = 'tmp', open_now = true) {
+  constructor (name = 'tmp', loaded_fn) {
     super();
     this._storage = {}
     this._storage_driver = new MyStorage(name);
@@ -68,7 +68,9 @@ export class CMMC_Storage extends IStorage {
     this._storage = JSON.parse(loaded)
     if (this._storage == null) {
       this._storage = {};
+      this.commit();
     }
+    return this._storage;
   }
 
   commit () {

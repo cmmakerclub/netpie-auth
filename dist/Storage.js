@@ -77,7 +77,7 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
 
   function CMMC_Storage() {
     var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'tmp';
-    var open_now = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var loaded_fn = arguments[1];
     (0, _classCallCheck3.default)(this, CMMC_Storage);
 
     var _this = (0, _possibleConstructorReturn3.default)(this, (CMMC_Storage.__proto__ || Object.getPrototypeOf(CMMC_Storage)).call(this));
@@ -97,7 +97,9 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
       this._storage = JSON.parse(loaded);
       if (this._storage == null) {
         this._storage = {};
+        this.commit();
       }
+      return this._storage;
     }
   }, {
     key: "commit",

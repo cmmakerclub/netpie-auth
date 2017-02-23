@@ -3,7 +3,7 @@
 var _NetpieAuth = require("./NetpieAuth");
 
 var appid = "Goose";
-var appkey = "PuYksxVJSSAxnOT";
+var appkey = "qPuYksxVJSSAxnOT";
 var appsecret = "8cuZpXrYyIOquwtJRAzSNI8yc";
 
 var netpie = new _NetpieAuth.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
@@ -24,5 +24,5 @@ try {
     });
   }, 500);
 } catch (err) {
-  console.log("ERRR>>", err);
+  console.error(err);
 }

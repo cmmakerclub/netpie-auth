@@ -7,11 +7,7 @@ var CryptoJS = require("crypto-js");
 
 var Util = exports.Util = {
   log: function log() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    console.log.apply(console, args);
+    // console.log.apply(console, args)
   },
   base64: function base64(text) {
     return text.toString(CryptoJS.enc.Base64);

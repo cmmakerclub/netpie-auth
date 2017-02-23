@@ -55,8 +55,13 @@ export class NetpieAuth {
     }
     else {
       try {
-        await this.getToken();
-        return this.getMqttAuth(callback);
+        let token = await this.getToken();
+        if (token !== null) {
+          return this.getMqttAuth(callback);
+        }
+        else {
+          return null;
+        }
       }
       catch (err) {
         Util.log("ERROR: getMqttAuth", err)
@@ -74,7 +79,7 @@ export class NetpieAuth {
       last_ampersand: true,
       signature_method: 'HMAC-SHA1',
       hash_function: function (base_string, key) {
-        return CryptoJS.HmacSHA1(base_string, key).toString(CryptoJS.enc.Base64);
+        return Util.hmac(base_string, key)
       }
     });
   }
@@ -120,15 +125,15 @@ export class NetpieAuth {
   }
 
   _getRequestToken = async () => {
-    return await this.build_request_object('/api/rtoken')
-    .data({oauth_callback: 'scope=&appid=' + "" + this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier})
+    return this.build_request_object('/api/rtoken')
+    .data({oauth_callback: `scope=&appid=${this.appid}&mgrev=${MGREV}&verifier=${verifier}`})
     .request((request_token) => {
       return this.oauth.toHeader(this.oauth.authorize(request_token)).Authorization
     });
   }
 
   _getAccessToken = async () => {
-    return await this.build_request_object('/api/atoken')
+    return this.build_request_object('/api/atoken')
     .data({oauth_verifier: verifier})
     .request((request_data) => {
       let _reqtok = {
@@ -140,14 +145,14 @@ export class NetpieAuth {
     })
   }
 
-  _saveRequestToken = (object) => {
+  _saveRequestToken = (params) => {
     Util.log(`SET STATE= ${Storage.STATE.STATE_REQ_TOKEN}`)
     let _data = new Map();
 
     _data.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN);
-    _data.set(Storage.KEY_OAUTH_REQUEST_TOKEN, object.oauth_token);
-    _data.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, object.oauth_token_secret);
-    _data.set(Storage.KEY_VERIFIER, object.verifier)
+    _data.set(Storage.KEY_OAUTH_REQUEST_TOKEN, params.oauth_token);
+    _data.set(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET, params.oauth_token_secret);
+    _data.set(Storage.KEY_VERIFIER, params.verifier)
 
     for (let [key, value] of _data.entries()) {
       Util.log("SAVE REQ TOKEN: KEY ", key, ">>", value)
@@ -174,22 +179,28 @@ export class NetpieAuth {
 
 
   getToken = async () => {
+    let token = null
     try {
       Util.log(`NetpieAuth.js ${this}`)
       // @flow STEP1: GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken();
-      let {oauth_token, oauth_token_secret} = this.extract(await req1_resp.text());
-      this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
+      if (req1_resp.status == 200) {
+        let {oauth_token, oauth_token_secret} = this.extract(text);
+        this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
 
-      // @flow STEP2: GET ACCESS TOKEN
-      let req2_resp = await this._getAccessToken();
-      let token = this.extract(await req2_resp.text())
-      this._saveAccessToken({
-        oauth_token: token.oauth_token,
-        oauth_token_secret: token.oauth_token_secret,
-        endpoint: token.endpoint,
-        flag: token.flag
-      })
+        // @flow STEP2: GET ACCESS TOKEN
+        let req2_resp = await this._getAccessToken();
+        let token = this.extract(await req2_resp.text())
+        this._saveAccessToken({
+          oauth_token: token.oauth_token,
+          oauth_token_secret: token.oauth_token_secret,
+          endpoint: token.endpoint,
+          flag: token.flag
+        })
+      }
+      else {
+        console.error(`${req1_resp.status} ${req1_resp.statusText}`)
+      }
 
       return token
     }
