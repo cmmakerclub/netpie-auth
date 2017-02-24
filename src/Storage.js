@@ -48,6 +48,7 @@ let KEYS = {
   APP_KEY: 0x09,
   APP_SECRET: 0x0a,
   VERIFIER: 0x0b,
+  APP_ID: 0x0c,
 }
 
 let KEYS_MIRRORED = keyMirror(KEYS)
@@ -72,6 +73,7 @@ export class CMMC_Storage extends IStorage {
   static KEY_APP_KEY = KEYS_MIRRORED.APP_KEY
   static KEY_APP_SECRET = KEYS_MIRRORED.APP_SECRET
   static KEY_VERIFIER = KEYS_MIRRORED.VERIFIER
+  static KEY_APP_ID = KEYS_MIRRORED.APP_ID;
 
   constructor (name = 'tmp', loaded_fn) {
     super();
@@ -83,14 +85,19 @@ export class CMMC_Storage extends IStorage {
   load () {
     let loaded = this._storage_driver.getItem(CACHE_KEY);
     this._storage = JSON.parse(loaded)
-    if (this._storage == null) {
+    if (this._storage === null) {
       this._storage = {};
       this.commit();
     }
     return this._storage;
   }
 
+  clear() {
+    this._storage = {}
+    this.commit()
+  }
+
   commit () {
-    this._storage_driver.setItem(CACHE_KEY, JSON.stringify(this._storage));
+    return this._storage_driver.setItem(CACHE_KEY, JSON.stringify(this._storage));
   }
 }

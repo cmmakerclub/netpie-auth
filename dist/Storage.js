@@ -83,7 +83,8 @@ var KEYS = {
   FLAG: 0x08,
   APP_KEY: 0x09,
   APP_SECRET: 0x0a,
-  VERIFIER: 0x0b
+  VERIFIER: 0x0b,
+  APP_ID: 0x0c
 };
 
 var KEYS_MIRRORED = keyMirror(KEYS);
@@ -111,16 +112,22 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage) {
     value: function load() {
       var loaded = this._storage_driver.getItem(CACHE_KEY);
       this._storage = JSON.parse(loaded);
-      if (this._storage == null) {
+      if (this._storage === null) {
         this._storage = {};
         this.commit();
       }
       return this._storage;
     }
   }, {
+    key: "clear",
+    value: function clear() {
+      this._storage = {};
+      this.commit();
+    }
+  }, {
     key: "commit",
     value: function commit() {
-      this._storage_driver.setItem(CACHE_KEY, JSON.stringify(this._storage));
+      return this._storage_driver.setItem(CACHE_KEY, JSON.stringify(this._storage));
     }
   }]);
   return CMMC_Storage;
@@ -142,3 +149,4 @@ CMMC_Storage.KEY_FLAG = KEYS_MIRRORED.FLAG;
 CMMC_Storage.KEY_APP_KEY = KEYS_MIRRORED.APP_KEY;
 CMMC_Storage.KEY_APP_SECRET = KEYS_MIRRORED.APP_SECRET;
 CMMC_Storage.KEY_VERIFIER = KEYS_MIRRORED.VERIFIER;
+CMMC_Storage.KEY_APP_ID = KEYS_MIRRORED.APP_ID;
