@@ -1,6 +1,4 @@
 var OAuth = require('oauth-1.0a');
-
-let CryptoJS = require("crypto-js");
 let fetch = require("node-fetch")
 import {CMMC_Storage as Storage} from './Storage'
 import * as Helper from './Util'
@@ -15,13 +13,20 @@ const gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
 let verifier = MGREV;
 
 export class NetpieAuth {
+  initilized =false
   constructor (props) {
     this.appid = props.appid
     this.appkey = props.appkey
     this.appsecret = props.appsecret
     this.create(props)
-    this._storage = new Storage(this.appid)
   }
+
+  async initSync() {
+    this._storage = new Storage(this.appid)
+    this.initilized = true
+    return this;
+  }
+
 
   getMqttAuth = async (callback) => {
     if (this._storage.get(Storage.KEY_STATE) === Storage.STATE.STATE_ACCESS_TOKEN) {
@@ -34,7 +39,6 @@ export class NetpieAuth {
       let hkey = Util.compute_hkey(access_token_secret, appsecret)
       let mqttusername = `${appkey}%${Math.floor(Date.now()/1000)}`;
       let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
-      let revoke_code = Util.compute_revoke_code(access_token, hkey)
       let [input, protocol, host, port] = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/)
       let ret = {
         username: mqttusername,

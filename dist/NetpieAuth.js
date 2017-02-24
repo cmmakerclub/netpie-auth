@@ -1,33 +1,33 @@
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.NetpieAuth = undefined;
 
-var _regenerator = require("babel-runtime/regenerator");
+var _regenerator = require('babel-runtime/regenerator');
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _slicedToArray2 = require("babel-runtime/helpers/slicedToArray");
+var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
-var _asyncToGenerator2 = require("babel-runtime/helpers/asyncToGenerator");
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require("babel-runtime/helpers/createClass");
+var _createClass2 = require('babel-runtime/helpers/createClass');
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _Storage = require("./Storage");
+var _Storage = require('./Storage');
 
-var _Util = require("./Util");
+var _Util = require('./Util');
 
 var Helper = _interopRequireWildcard(_Util);
 
@@ -36,8 +36,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var OAuth = require('oauth-1.0a');
-
-var CryptoJS = require("crypto-js");
 var fetch = require("node-fetch");
 
 var Util = Helper.Util;
@@ -55,34 +53,34 @@ var NetpieAuth = exports.NetpieAuth = function () {
     var _this = this;
 
     (0, _classCallCheck3.default)(this, NetpieAuth);
+    this.initilized = false;
 
     this.getMqttAuth = function () {
       var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(callback) {
-        var _ref2, appkey, appsecret, appid, _ref3, access_token, access_token_secret, endpoint, hkey, mqttusername, mqttpassword, revoke_code, _endpoint$match, _endpoint$match2, input, protocol, host, port, ret, token;
+        var _ref2, appkey, appsecret, appid, _ref3, access_token, access_token_secret, endpoint, hkey, mqttusername, mqttpassword, _endpoint$match, _endpoint$match2, input, protocol, host, port, ret, token;
 
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 if (!(_this._storage.get(_Storage.CMMC_Storage.KEY_STATE) === _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
-                  _context.next = 14;
+                  _context.next = 13;
                   break;
                 }
 
-                Util.log("STATE = ACCESS_TOKEN");
+                Util.log('STATE = ACCESS_TOKEN');
                 _ref2 = [_this.appkey, _this.appsecret, _this.appid], appkey = _ref2[0], appsecret = _ref2[1], appid = _ref2[2];
                 _ref3 = [_this._storage.get(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN), _this._storage.get(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)], access_token = _ref3[0], access_token_secret = _ref3[1];
                 endpoint = decodeURIComponent(_this._storage.get(_Storage.CMMC_Storage.KEY_ENDPOINT));
                 hkey = Util.compute_hkey(access_token_secret, appsecret);
-                mqttusername = appkey + "%" + Math.floor(Date.now() / 1000);
+                mqttusername = appkey + '%' + Math.floor(Date.now() / 1000);
                 mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey);
-                revoke_code = Util.compute_revoke_code(access_token, hkey);
                 _endpoint$match = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/), _endpoint$match2 = (0, _slicedToArray3.default)(_endpoint$match, 4), input = _endpoint$match2[0], protocol = _endpoint$match2[1], host = _endpoint$match2[2], port = _endpoint$match2[3];
                 ret = {
                   username: mqttusername,
                   password: mqttpassword,
                   client_id: access_token,
-                  prefix: "/" + appid + "/gearname",
+                  prefix: '/' + appid + '/gearname',
                   appid: appid,
                   host: host,
                   port: port,
@@ -90,44 +88,44 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 };
 
                 callback.apply(_this, [ret]);
-                _context.next = 29;
+                _context.next = 28;
                 break;
 
-              case 14:
-                _context.prev = 14;
-                _context.next = 17;
+              case 13:
+                _context.prev = 13;
+                _context.next = 16;
                 return _this.getToken();
 
-              case 17:
+              case 16:
                 token = _context.sent;
 
                 if (!(token !== null)) {
-                  _context.next = 22;
+                  _context.next = 21;
                   break;
                 }
 
-                return _context.abrupt("return", _this.getMqttAuth(callback));
+                return _context.abrupt('return', _this.getMqttAuth(callback));
+
+              case 21:
+                return _context.abrupt('return', null);
 
               case 22:
-                return _context.abrupt("return", null);
-
-              case 23:
-                _context.next = 29;
+                _context.next = 28;
                 break;
 
-              case 25:
-                _context.prev = 25;
-                _context.t0 = _context["catch"](14);
+              case 24:
+                _context.prev = 24;
+                _context.t0 = _context['catch'](13);
 
                 console.log(62, _context.t0);
-                return _context.abrupt("return", null);
+                return _context.abrupt('return', null);
 
-              case 29:
-              case "end":
+              case 28:
+              case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, _this, [[14, 25]]);
+        }, _callee, _this, [[13, 24]]);
       }));
 
       return function (_x) {
@@ -140,12 +138,12 @@ var NetpieAuth = exports.NetpieAuth = function () {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              return _context2.abrupt("return", _this.build_request_object('/api/rtoken').data({ oauth_callback: "scope=&appid=" + _this.appid + "&mgrev=" + MGREV + "&verifier=" + verifier }).request(function (request_token) {
+              return _context2.abrupt('return', _this.build_request_object('/api/rtoken').data({ oauth_callback: 'scope=&appid=' + _this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier }).request(function (request_token) {
                 return _this.oauth.toHeader(_this.oauth.authorize(request_token)).Authorization;
               }));
 
             case 1:
-            case "end":
+            case 'end':
               return _context2.stop();
           }
         }
@@ -156,7 +154,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              return _context3.abrupt("return", _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
+              return _context3.abrupt('return', _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
                 var _reqtok = {
                   key: _this._storage.get(_Storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
                   secret: _this._storage.get(_Storage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
@@ -166,7 +164,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               }));
 
             case 1:
-            case "end":
+            case 'end':
               return _context3.stop();
           }
         }
@@ -174,7 +172,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     }));
 
     this._saveRequestToken = function (params) {
-      Util.log("SET STATE= " + _Storage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
+      Util.log('SET STATE= ' + _Storage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
       var _data = new Map();
 
       _data.set(_Storage.CMMC_Storage.KEY_STATE, _Storage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
@@ -212,7 +210,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     };
 
     this._saveAccessToken = function (object) {
-      Util.log("SET STATE= " + _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
+      Util.log('SET STATE= ' + _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
       var _data = new Map();
       _data.set(_Storage.CMMC_Storage.KEY_STATE, _Storage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
       _data.set(_Storage.CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
@@ -260,7 +258,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               token = null;
               _context4.prev = 1;
 
-              Util.log("NetpieAuth.js " + _this);
+              Util.log('NetpieAuth.js ' + _this);
               // @flow STEP1: GET REQUEST TOKEN
               _context4.next = 5;
               return _this._getRequestToken();
@@ -312,22 +310,22 @@ var NetpieAuth = exports.NetpieAuth = function () {
               err = {
                 name: 'NetpieError',
                 type: 'Invalid AppKey or AppSecret',
-                message: req1_resp.status + " " + req1_resp.statusText + " (Invalid App/Secret Key)"
+                message: req1_resp.status + ' ' + req1_resp.statusText + ' (Invalid App/Secret Key)'
               };
               throw new Error(err.message);
 
             case 27:
-              return _context4.abrupt("return", token);
+              return _context4.abrupt('return', token);
 
             case 30:
               _context4.prev = 30;
-              _context4.t2 = _context4["catch"](1);
+              _context4.t2 = _context4['catch'](1);
 
               console.error(_context4.t2);
-              return _context4.abrupt("return", null);
+              return _context4.abrupt('return', null);
 
             case 34:
-            case "end":
+            case 'end':
               return _context4.stop();
           }
         }
@@ -338,11 +336,36 @@ var NetpieAuth = exports.NetpieAuth = function () {
     this.appkey = props.appkey;
     this.appsecret = props.appsecret;
     this.create(props);
-    this._storage = new _Storage.CMMC_Storage(this.appid);
   }
 
   (0, _createClass3.default)(NetpieAuth, [{
-    key: "create",
+    key: 'initSync',
+    value: function () {
+      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                this._storage = new _Storage.CMMC_Storage(this.appid);
+                this.initilized = true;
+                return _context5.abrupt('return', this);
+
+              case 3:
+              case 'end':
+                return _context5.stop();
+            }
+          }
+        }, _callee5, this);
+      }));
+
+      function initSync() {
+        return _ref7.apply(this, arguments);
+      }
+
+      return initSync;
+    }()
+  }, {
+    key: 'create',
     value: function create(config) {
       this.oauth = OAuth({
         consumer: {
@@ -357,7 +380,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
       });
     }
   }, {
-    key: "extract",
+    key: 'extract',
     value: function extract(response) {
       var arr = response.split('&');
       return arr.reduce(function (acc, v) {
@@ -371,14 +394,14 @@ var NetpieAuth = exports.NetpieAuth = function () {
       }, {});
     }
   }, {
-    key: "request",
+    key: 'request',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5(data, auth_func) {
-        return _regenerator2.default.wrap(function _callee5$(_context5) {
+      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(data, auth_func) {
+        return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                return _context5.abrupt("return", fetch(data.url, {
+                return _context6.abrupt('return', fetch(data.url, {
                   method: data.method,
                   timeout: 5000,
                   headers: {
@@ -387,21 +410,21 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 }));
 
               case 1:
-              case "end":
-                return _context5.stop();
+              case 'end':
+                return _context6.stop();
             }
           }
-        }, _callee5, this);
+        }, _callee6, this);
       }));
 
       function request(_x2, _x3) {
-        return _ref7.apply(this, arguments);
+        return _ref8.apply(this, arguments);
       }
 
       return request;
     }()
   }, {
-    key: "build_request_object",
+    key: 'build_request_object',
     value: function build_request_object(uri) {
       var _this2 = this;
 
