@@ -32,9 +32,8 @@ export class NetpieAuth {
     let appsecret_cached = this._storage.get(Storage.KEY_APP_SECRET)
 
     let should_revoke = ((this.appid !== appid_cached) || (this.appkey !== appkey_cached) ||
-                        (this.appsecret !== appsecret_cached))
+                        (this.appsecret !== appsecret_cached) && appid_cached && appkey_cached && appsecret_cached)
 
-    console.log(`should revoke = ${should_revoke}`)
     if (should_revoke) {
       console.log(`[CACHED] => ${access_token_cached} - ${access_token_secret_cached}, ${revoke_token_cached}`)
       console.log(`REVOKE URL = ${gearauthurl}/api/revoke/${access_token_cached}/${revoke_token_cached}`)
@@ -49,15 +48,6 @@ export class NetpieAuth {
         console.log("ERROR", ex)
       }
     }
-    // .data({oauth_verifier: verifier})
-    // .request((request_data) => {
-    //   let _reqtok = {
-    //     key: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN),
-    //     secret: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
-    //   };
-    //   let auth_header = this.oauth.toHeader(this.oauth.authorize(request_data, _reqtok)).Authorization
-    //   return auth_header;
-    // })
 
     this.initilized = true
     return this;

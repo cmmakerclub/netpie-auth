@@ -357,66 +357,54 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 appid_cached = this._storage.get(_Storage.CMMC_Storage.KEY_APP_ID);
                 appkey_cached = this._storage.get(_Storage.CMMC_Storage.KEY_APP_KEY);
                 appsecret_cached = this._storage.get(_Storage.CMMC_Storage.KEY_APP_SECRET);
-                should_revoke = this.appid !== appid_cached || this.appkey !== appkey_cached || this.appsecret !== appsecret_cached;
-
-
-                console.log('should revoke = ' + should_revoke);
+                should_revoke = this.appid !== appid_cached || this.appkey !== appkey_cached || this.appsecret !== appsecret_cached && appid_cached && appkey_cached && appsecret_cached;
 
                 if (!should_revoke) {
-                  _context5.next = 28;
+                  _context5.next = 27;
                   break;
                 }
 
                 console.log('[CACHED] => ' + access_token_cached + ' - ' + access_token_secret_cached + ', ' + revoke_token_cached);
                 console.log('REVOKE URL = ' + gearauthurl + '/api/revoke/' + access_token_cached + '/' + revoke_token_cached);
-                _context5.prev = 12;
-                _context5.next = 15;
+                _context5.prev = 11;
+                _context5.next = 14;
                 return this.build_request_object('/api/revoke/' + access_token_cached + '/' + revoke_token_cached, 'GET').request(function () {
                   return '';
                 });
 
-              case 15:
+              case 14:
                 resp = _context5.sent;
                 _context5.t0 = console;
-                _context5.next = 19;
+                _context5.next = 18;
                 return resp.text();
 
-              case 19:
+              case 18:
                 _context5.t1 = _context5.sent;
                 _context5.t2 = 'RESPONSE = ' + _context5.t1;
 
                 _context5.t0.log.call(_context5.t0, _context5.t2);
 
                 this._storage.clear();
-                _context5.next = 28;
+                _context5.next = 27;
                 break;
 
-              case 25:
-                _context5.prev = 25;
-                _context5.t3 = _context5['catch'](12);
+              case 24:
+                _context5.prev = 24;
+                _context5.t3 = _context5['catch'](11);
 
                 console.log("ERROR", _context5.t3);
 
-              case 28:
-                // .data({oauth_verifier: verifier})
-                // .request((request_data) => {
-                //   let _reqtok = {
-                //     key: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN),
-                //     secret: this._storage.get(Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
-                //   };
-                //   let auth_header = this.oauth.toHeader(this.oauth.authorize(request_data, _reqtok)).Authorization
-                //   return auth_header;
-                // })
+              case 27:
 
                 this.initilized = true;
                 return _context5.abrupt('return', this);
 
-              case 30:
+              case 29:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[12, 25]]);
+        }, _callee5, this, [[11, 24]]);
       }));
 
       function initSync() {
