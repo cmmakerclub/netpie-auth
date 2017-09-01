@@ -1,4 +1,4 @@
-let CryptoJS = require("crypto-js");
+let CryptoJS = require('crypto-js')
 
 export let Util = {
   debug: (...args) => {
