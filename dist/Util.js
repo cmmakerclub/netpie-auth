@@ -7,15 +7,11 @@ var CryptoJS = require('crypto-js');
 
 var Util = exports.Util = {
   debug: function debug() {
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    console.log.apply(console, args);
+    // console.log.apply(console, args)
   },
   log: function log() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
 
     console.log.apply(console, args);

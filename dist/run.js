@@ -12,7 +12,6 @@ netpie.getMqttAuth(function (mqttAuthStruct) {
   Object.keys(mqttAuthStruct).forEach(function (key, idx) {
     console.log(key + ' => ' + mqttAuthStruct[key]);
   });
-  // console.log('auth structure', mqttAuthStruct)
   // let {username, password, client_id, prefix, host, port} = mqttAuthStruct
   // console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`)
 });

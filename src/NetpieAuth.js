@@ -60,7 +60,7 @@ export class NetpieAuth {
 
   getMqttAuth = async (callback) => {
     if (this._storage.get(Storage.KEY_STATE) === Storage.STATE.STATE_ACCESS_TOKEN) {
-      Util.log(`STATE = ACCESS_TOKEN`)
+      Util.debug(`STATE = ACCESS_TOKEN`)
       let [appkey, appsecret, appid] = [this.appkey, this.appsecret, this.appid]
       let [access_token, access_token_secret] = [this._storage.get(Storage.KEY_ACCESS_TOKEN),
         this._storage.get(Storage.KEY_ACCESS_TOKEN_SECRET)]
@@ -173,7 +173,7 @@ export class NetpieAuth {
   }
 
   _saveRequestToken = (params) => {
-    Util.log(`SET STATE= ${Storage.STATE.STATE_REQ_TOKEN}`)
+    Util.debug(`SET STATE= ${Storage.STATE.STATE_REQ_TOKEN}`)
     let _data = new Map()
 
     _data.set(Storage.KEY_STATE, Storage.STATE.STATE_REQ_TOKEN)
@@ -185,13 +185,13 @@ export class NetpieAuth {
     _data.set(Storage.KEY_APP_SECRET, this.appsecret)
 
     for (let [key, value] of _data.entries()) {
-      Util.log('SAVE REQ TOKEN: KEY ', key, '>>', value)
+      Util.debug('SAVE REQ TOKEN: KEY ', key, '>>', value)
       this._storage.set(key, value)
     }
   }
 
   _saveAccessToken = (object) => {
-    Util.log(`SET STATE= ${Storage.STATE.STATE_ACCESS_TOKEN}`)
+    Util.debug(`SET STATE= ${Storage.STATE.STATE_ACCESS_TOKEN}`)
     let _data = new Map()
     _data.set(Storage.KEY_STATE, Storage.STATE.STATE_ACCESS_TOKEN)
     _data.set(Storage.KEY_ACCESS_TOKEN, object.oauth_token)
@@ -209,7 +209,6 @@ export class NetpieAuth {
   getOAuthToken = async () => {
     let token = null
     try {
-      Util.log(`NetpieAuth.js ${this}`)
       // @flow STEP1:
       // GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken()

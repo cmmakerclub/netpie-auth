@@ -69,7 +69,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   break;
                 }
 
-                Util.log('STATE = ACCESS_TOKEN');
+                Util.debug('STATE = ACCESS_TOKEN');
                 _ref2 = [_this.appkey, _this.appsecret, _this.appid], appkey = _ref2[0], appsecret = _ref2[1], appid = _ref2[2];
                 _ref3 = [_this._storage.get(_CStorage.CMMC_Storage.KEY_ACCESS_TOKEN), _this._storage.get(_CStorage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)], access_token = _ref3[0], access_token_secret = _ref3[1];
                 endpoint = decodeURIComponent(_this._storage.get(_CStorage.CMMC_Storage.KEY_ENDPOINT));
@@ -172,7 +172,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     }));
 
     this._saveRequestToken = function (params) {
-      Util.log('SET STATE= ' + _CStorage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
+      Util.debug('SET STATE= ' + _CStorage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
       var _data = new Map();
 
       _data.set(_CStorage.CMMC_Storage.KEY_STATE, _CStorage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
@@ -193,7 +193,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               key = _step$value[0],
               value = _step$value[1];
 
-          Util.log('SAVE REQ TOKEN: KEY ', key, '>>', value);
+          Util.debug('SAVE REQ TOKEN: KEY ', key, '>>', value);
           _this._storage.set(key, value);
         }
       } catch (err) {
@@ -213,7 +213,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     };
 
     this._saveAccessToken = function (object) {
-      Util.log('SET STATE= ' + _CStorage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
+      Util.debug('SET STATE= ' + _CStorage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
       var _data = new Map();
       _data.set(_CStorage.CMMC_Storage.KEY_STATE, _CStorage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
       _data.set(_CStorage.CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
@@ -261,25 +261,21 @@ var NetpieAuth = exports.NetpieAuth = function () {
             case 0:
               token = null;
               _context4.prev = 1;
-
-              Util.log('NetpieAuth.js ' + _this);
-              // @flow STEP1:
-              // GET REQUEST TOKEN
-              _context4.next = 5;
+              _context4.next = 4;
               return _this._getRequestToken();
 
-            case 5:
+            case 4:
               req1_resp = _context4.sent;
 
               if (!req1_resp.ok) {
-                _context4.next = 25;
+                _context4.next = 24;
                 break;
               }
 
-              _context4.next = 9;
+              _context4.next = 8;
               return req1_resp.text();
 
-            case 9:
+            case 8:
               text = _context4.sent;
               _extract = _this.extract(text), oauth_token = _extract.oauth_token, oauth_token_secret = _extract.oauth_token_secret;
               // @flow STEP1.2:
@@ -289,16 +285,16 @@ var NetpieAuth = exports.NetpieAuth = function () {
 
               // @flow STEP2:
               // GET ACCESS TOKEN
-              _context4.next = 14;
+              _context4.next = 13;
               return _this._getAccessToken();
 
-            case 14:
+            case 13:
               req2_resp = _context4.sent;
               _context4.t0 = _this;
-              _context4.next = 18;
+              _context4.next = 17;
               return req2_resp.text();
 
-            case 18:
+            case 17:
               _context4.t1 = _context4.sent;
               access_token = _context4.t0.extract.call(_context4.t0, _context4.t1);
 
@@ -316,10 +312,10 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 flag: access_token.flag,
                 revoke_token: revoke_token
               });
-              _context4.next = 27;
+              _context4.next = 26;
               break;
 
-            case 25:
+            case 24:
               err = {
                 name: 'NetpieError',
                 type: 'Invalid AppKey or AppSecret',
@@ -327,20 +323,20 @@ var NetpieAuth = exports.NetpieAuth = function () {
               };
               throw new Error(err.message);
 
-            case 27:
+            case 26:
               return _context4.abrupt('return', token);
 
-            case 30:
-              _context4.prev = 30;
+            case 29:
+              _context4.prev = 29;
               _context4.t2 = _context4['catch'](1);
               throw _context4.t2;
 
-            case 33:
+            case 32:
             case 'end':
               return _context4.stop();
           }
         }
-      }, _callee4, _this, [[1, 30]]);
+      }, _callee4, _this, [[1, 29]]);
     }));
 
     this.appid = props.appid;

@@ -2,7 +2,7 @@ let CryptoJS = require('crypto-js')
 
 export let Util = {
   debug: (...args) => {
-    console.log.apply(console, args)
+    // console.log.apply(console, args)
   },
   log: (...args) => {
     console.log.apply(console, args)

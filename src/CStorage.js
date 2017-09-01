@@ -50,22 +50,20 @@ class MyStorage {
   }
 }
 
-let KEYS = {
-  STATE: '',
-  OAUTH_REQUEST_TOKEN: '',
-  OAUTH_REQUEST_TOKEN_SECRET: '',
-  ACCESS_TOKEN: '',
-  ACCESS_TOKEN_SECRET: '',
-  REVOKE_TOKEN: '',
-  ENDPOINT: '',
-  FLAG: '',
-  APP_KEY: '',
-  APP_SECRET: '',
-  VERIFIER: '',
-  APP_ID: '',
-}
-
-let KEYS_MIRRORED = keyMirror(KEYS)
+let KEYS_MIRRORED = keyMirror({
+  STATE: null,
+  OAUTH_REQUEST_TOKEN: null,
+  OAUTH_REQUEST_TOKEN_SECRET: null,
+  ACCESS_TOKEN: null,
+  ACCESS_TOKEN_SECRET: null,
+  REVOKE_TOKEN: null,
+  ENDPOINT: null,
+  FLAG: null,
+  APP_KEY: null,
+  APP_SECRET: null,
+  VERIFIER: null,
+  APP_ID: null,
+})
 
 export class CMMC_Storage extends IStorage {
   _storage_driver = null

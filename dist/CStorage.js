@@ -94,22 +94,20 @@ var MyStorage = function () {
   return MyStorage;
 }();
 
-var KEYS = {
-  STATE: '',
-  OAUTH_REQUEST_TOKEN: '',
-  OAUTH_REQUEST_TOKEN_SECRET: '',
-  ACCESS_TOKEN: '',
-  ACCESS_TOKEN_SECRET: '',
-  REVOKE_TOKEN: '',
-  ENDPOINT: '',
-  FLAG: '',
-  APP_KEY: '',
-  APP_SECRET: '',
-  VERIFIER: '',
-  APP_ID: ''
-};
-
-var KEYS_MIRRORED = keyMirror(KEYS);
+var KEYS_MIRRORED = keyMirror({
+  STATE: null,
+  OAUTH_REQUEST_TOKEN: null,
+  OAUTH_REQUEST_TOKEN_SECRET: null,
+  ACCESS_TOKEN: null,
+  ACCESS_TOKEN_SECRET: null,
+  REVOKE_TOKEN: null,
+  ENDPOINT: null,
+  FLAG: null,
+  APP_KEY: null,
+  APP_SECRET: null,
+  VERIFIER: null,
+  APP_ID: null
+});
 
 var CMMC_Storage = exports.CMMC_Storage = function (_IStorage2) {
   (0, _inherits3.default)(CMMC_Storage, _IStorage2);
