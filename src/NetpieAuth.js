@@ -40,7 +40,7 @@ export class NetpieAuth {
       Util.log(`[CACHED] => ${access_token_cached} - ${access_token_secret_cached}, ${revoke_token_cached}`)
       Util.log(`REVOKE URL = ${gearauthurl}/api/revoke/${access_token_cached}/${revoke_token_cached}`)
       try {
-        let resp = await this.build_request_object(`/api/revoke/${access_token_cached}/${revoke_token_cached}`,
+        let resp = await this.buildRequestObject(`/api/revoke/${access_token_cached}/${revoke_token_cached}`,
           'GET').request(() => {
         })
         let revoke_text = await resp.text()
@@ -70,16 +70,14 @@ export class NetpieAuth {
       let mqttusername = `${appkey}`
       let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
       let [input, protocol, host, port] = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/)
-      console.log(`Revoke = ${Util.compute_revoke_code(access_token, hkey)}`)
+      let revoke_token = Util.compute_revoke_code(access_token, hkey)
+      console.log(`revoke_token = ${revoke_token}`)
       let ret = {
+        revoke_token, appid, host, port, endpoint,
         username: mqttusername,
         password: mqttpassword,
         client_id: access_token,
-        prefix: `/${appid}/gearname`,
-        appid: appid,
-        host: host,
-        port: port,
-        endpoint: endpoint
+        prefix: `/${appid}/gearname`
       }
       callback.apply(this, [ret])
     }
@@ -89,13 +87,12 @@ export class NetpieAuth {
     }
     else {
       // first request
-      try {
-        await this.getOAuthToken()
+      await this.getOAuthToken().then(() => {
         this.getMqttAuth(callback)
-      }
-      catch (err) {
-        throw err
-      }
+      }).catch((ex) => {
+        console.log('Error => ', ex.message)
+        // throw ex
+      })
     }
   }
 
@@ -132,7 +129,7 @@ export class NetpieAuth {
     })
   }
 
-  build_request_object (uri, method = 'POST') {
+  buildRequestObject (uri, method = 'POST') {
     let obj = {
       method: method,
       url: gearauthurl + uri,
@@ -152,7 +149,7 @@ export class NetpieAuth {
   }
 
   _getRequestToken = async () => {
-    return this.build_request_object('/api/rtoken')
+    return this.buildRequestObject('/api/rtoken')
       .data({oauth_callback: `scope=&appid=${this.appid}&mgrev=${MGREV}&verifier=${verifier}`})
       .request((request_token) => {
         return this.oauth.toHeader(this.oauth.authorize(request_token)).Authorization
@@ -160,7 +157,7 @@ export class NetpieAuth {
   }
 
   _getAccessToken = async () => {
-    return this.build_request_object('/api/atoken')
+    return this.buildRequestObject('/api/atoken')
       .data({oauth_verifier: verifier})
       .request((request_data) => {
         let _reqtok = {
@@ -207,49 +204,44 @@ export class NetpieAuth {
   }
 
   getOAuthToken = async () => {
-    let token = null
-    try {
-      // @flow STEP1:
-      // GET REQUEST TOKEN
-      let req1_resp = await this._getRequestToken()
-      if (req1_resp.ok) {
-        let text = await req1_resp.text()
-        let {oauth_token, oauth_token_secret} = this.extract(text)
-        // @flow STEP1.2:
-        // CACHE Request Token
-        this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
+    // @flow STEP1:
+    // GET REQUEST TOKEN
+    let req1_resp = await this._getRequestToken()
+    if (req1_resp.ok) {
+      let text = await req1_resp.text()
+      let {oauth_token, oauth_token_secret} = this.extract(text)
+      // @flow STEP1.2:
+      // CACHE Request Token
+      this._saveRequestToken({oauth_token, oauth_token_secret, verifier})
 
-        // @flow STEP2:
-        // GET ACCESS TOKEN
-        let req2_resp = await this._getAccessToken()
-        let access_token = this.extract(await req2_resp.text())
-
-        // compute revoke token
-        let hkey = Util.compute_hkey(access_token.oauth_token_secret, this.appsecret)
-        let revoke_token = Util.compute_revoke_code(access_token.oauth_token, hkey)
-
-        // @flow STEP2.2: CACHE Access Token
-        this._saveAccessToken({
-          oauth_token: access_token.oauth_token,
-          oauth_token_secret: access_token.oauth_token_secret,
-          endpoint: access_token.endpoint,
-          flag: access_token.flag,
-          revoke_token
-        })
+      // @flow STEP2:
+      // GET ACCESS TOKEN
+      let req2_resp = await this._getAccessToken()
+      if (!req2_resp.ok) {
+        throw new Error('Reached maximum (devices) quota.')
       }
-      else {
-        let err = {
-          name: 'NetpieError',
-          type: 'Invalid AppKey or AppSecret',
-          message: `${req1_resp.status} ${req1_resp.statusText} (Invalid App/Secret Key)`
-        }
-        throw new Error(err.message)
-      }
+      let access_token = this.extract(await req2_resp.text())
 
-      return token
+      // compute revoke token
+      let hkey = Util.compute_hkey(access_token.oauth_token_secret, this.appsecret)
+      let revoke_token = Util.compute_revoke_code(access_token.oauth_token, hkey)
+
+      // @flow STEP2.2: CACHE Access Token
+      this._saveAccessToken({
+        oauth_token: access_token.oauth_token,
+        oauth_token_secret: access_token.oauth_token_secret,
+        endpoint: access_token.endpoint,
+        flag: access_token.flag,
+        revoke_token
+      })
     }
-    catch (err) {
-      throw err
+    else {
+      let err = {
+        name: 'NetpieError',
+        type: 'Invalid AppKey or AppSecret',
+        message: `${req1_resp.status} ${req1_resp.statusText} (Invalid App/Secret Key)`
+      }
+      throw new Error(err.message)
     }
   }
 }

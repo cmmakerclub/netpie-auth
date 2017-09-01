@@ -1,17 +1,85 @@
 import { NetpieAuth } from './NetpieAuth'
+import Table from 'cli-table'
+import inquirer from 'inquirer'
 
-const appid = 'CMMCIO'
-const appkey = 'NhPwKvkJFLXYGfd'
-const appsecret = 'G5mY73QQK18g9js7ffDJnJt4t'
+const configStore = require('./Configstore')
+const pkg = require('../package.json')
+const program = require('commander')
+program
+  .usage('[options]')
+  .version(pkg.version)
+  .option('-i, --id <required>', 'netpie appId is required')
+  .option('-k, --key <required>', 'netpie appKey')
+  .option('-s, --secret <required>', 'netpie appSecret')
 
-let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret})
+program.parse(process.argv)
 
-netpie.getMqttAuth((mqttAuthStruct) => {
-  Object.keys(mqttAuthStruct).forEach((key, idx) => {
-    console.log(`${key} => ${mqttAuthStruct[key]}`)
+const validateNotNull = (input) => {
+  if (input) {
+    return true
+  }
+  else {
+    return 'input must be filled.'
+  }
+}
+
+const connectNetpie = () => {
+  const appid = configStore.get('id')
+  const appkey = configStore.get('key')
+  const appsecret = configStore.get('secret')
+
+  const head = ['Username', 'Password', 'ClientId', 'Prefix', 'Host', 'Port']
+  const table = new Table({head, style: {head: ['green']}})
+
+  const netpie = new NetpieAuth({appid, appkey, appsecret})
+  netpie.getMqttAuth((mqtt) => {
+    // Object.keys(mqtt).forEach((key, idx) => {
+    //   console.log(`${key} => ${mqtt[key]}`)
+    // })
+    table.push([mqtt.username, mqtt.password, mqtt.client_id, mqtt.prefix, mqtt.host, mqtt.port])
+    console.log(table.toString())
   })
-  // let {username, password, client_id, prefix, host, port} = mqttAuthStruct
-  // console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`)
-})
+}
 
+const displayInquirer = (callback) => {
+  var questions = [
+    {
+      type: 'input',
+      name: 'id',
+      default: configStore.get('id'),
+      validate: validateNotNull,
+      message: 'Netpie app id'
+    },
+    {
+      type: 'input',
+      name: 'key',
+      default: configStore.get('key'),
+      message: 'Netpie app key'
+    },
+    {
+      type: 'input',
+      name: 'secret',
+      default: configStore.get('secret'),
+      message: 'Netpie app secret'
+    },
+  ]
+
+  inquirer.prompt(questions).then(callback)
+
+}
+
+if (!program.id || !program.key || !program.secret) {
+  displayInquirer((ans) => {
+    configStore.set('id', ans.id)
+    configStore.set('key', ans.key)
+    configStore.set('secret', ans.secret)
+    connectNetpie()
+  })
+}
+else {
+  configStore.set('id', program.id)
+  configStore.set('key', program.key)
+  configStore.set('secret', program.secret)
+  connectNetpie()
+}
 

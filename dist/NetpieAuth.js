@@ -57,15 +57,15 @@ var NetpieAuth = exports.NetpieAuth = function () {
     this.initilized = false;
 
     this.getMqttAuth = function () {
-      var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee(callback) {
-        var _ref2, appkey, appsecret, appid, _ref3, access_token, access_token_secret, endpoint, hkey, mqttusername, mqttpassword, _endpoint$match, _endpoint$match2, input, protocol, host, port, ret;
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(callback) {
+        var _ref2, appkey, appsecret, appid, _ref3, access_token, access_token_secret, endpoint, hkey, mqttusername, mqttpassword, _endpoint$match, _endpoint$match2, input, protocol, host, port, revoke_token, ret;
 
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 if (!(_this._storage.get(_CStorage.CMMC_Storage.KEY_STATE) === _CStorage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN)) {
-                  _context.next = 14;
+                  _context.next = 15;
                   break;
                 }
 
@@ -79,53 +79,45 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 mqttusername = '' + appkey;
                 mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey);
                 _endpoint$match = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/), _endpoint$match2 = (0, _slicedToArray3.default)(_endpoint$match, 4), input = _endpoint$match2[0], protocol = _endpoint$match2[1], host = _endpoint$match2[2], port = _endpoint$match2[3];
+                revoke_token = Util.compute_revoke_code(access_token, hkey);
 
-                console.log('Revoke = ' + Util.compute_revoke_code(access_token, hkey));
+                console.log('revoke_token = ' + revoke_token);
                 ret = {
+                  revoke_token: revoke_token, appid: appid, host: host, port: port, endpoint: endpoint,
                   username: mqttusername,
                   password: mqttpassword,
                   client_id: access_token,
-                  prefix: '/' + appid + '/gearname',
-                  appid: appid,
-                  host: host,
-                  port: port,
-                  endpoint: endpoint
+                  prefix: '/' + appid + '/gearname'
                 };
 
                 callback.apply(_this, [ret]);
-                _context.next = 28;
+                _context.next = 22;
                 break;
 
-              case 14:
+              case 15:
                 if (!(_this._storage.get(_CStorage.CMMC_Storage.KEY_STATE) === _CStorage.CMMC_Storage.STATE.STATE_REQ_TOKEN)) {
-                  _context.next = 19;
+                  _context.next = 20;
                   break;
                 }
 
                 console.log('req token');
                 return _context.abrupt('return', _this.getMqttAuth(callback));
 
-              case 19:
-                _context.prev = 19;
+              case 20:
                 _context.next = 22;
-                return _this.getOAuthToken();
+                return _this.getOAuthToken().then(function () {
+                  _this.getMqttAuth(callback);
+                }).catch(function (ex) {
+                  console.log('Error => ', ex.message);
+                  // throw ex
+                });
 
               case 22:
-                _this.getMqttAuth(callback);
-                _context.next = 28;
-                break;
-
-              case 25:
-                _context.prev = 25;
-                _context.t0 = _context['catch'](19);
-                throw _context.t0;
-
-              case 28:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, _this, [[19, 25]]);
+        }, _callee, _this);
       }));
 
       return function (_x) {
@@ -133,12 +125,12 @@ var NetpieAuth = exports.NetpieAuth = function () {
       };
     }();
 
-    this._getRequestToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
+    this._getRequestToken = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2() {
       return _regenerator2.default.wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              return _context2.abrupt('return', _this.build_request_object('/api/rtoken').data({ oauth_callback: 'scope=&appid=' + _this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier }).request(function (request_token) {
+              return _context2.abrupt('return', _this.buildRequestObject('/api/rtoken').data({ oauth_callback: 'scope=&appid=' + _this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier }).request(function (request_token) {
                 return _this.oauth.toHeader(_this.oauth.authorize(request_token)).Authorization;
               }));
 
@@ -149,12 +141,12 @@ var NetpieAuth = exports.NetpieAuth = function () {
         }
       }, _callee2, _this);
     }));
-    this._getAccessToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee3() {
+    this._getAccessToken = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3() {
       return _regenerator2.default.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              return _context3.abrupt('return', _this.build_request_object('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
+              return _context3.abrupt('return', _this.buildRequestObject('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
                 var _reqtok = {
                   key: _this._storage.get(_CStorage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
                   secret: _this._storage.get(_CStorage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
@@ -252,19 +244,17 @@ var NetpieAuth = exports.NetpieAuth = function () {
       _this._storage.commit();
     };
 
-    this.getOAuthToken = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee4() {
-      var token, req1_resp, text, _extract, oauth_token, oauth_token_secret, req2_resp, access_token, hkey, revoke_token, err;
+    this.getOAuthToken = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4() {
+      var req1_resp, text, _extract, oauth_token, oauth_token_secret, req2_resp, access_token, hkey, revoke_token, err;
 
       return _regenerator2.default.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              token = null;
-              _context4.prev = 1;
-              _context4.next = 4;
+              _context4.next = 2;
               return _this._getRequestToken();
 
-            case 4:
+            case 2:
               req1_resp = _context4.sent;
 
               if (!req1_resp.ok) {
@@ -272,10 +262,10 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 break;
               }
 
-              _context4.next = 8;
+              _context4.next = 6;
               return req1_resp.text();
 
-            case 8:
+            case 6:
               text = _context4.sent;
               _extract = _this.extract(text), oauth_token = _extract.oauth_token, oauth_token_secret = _extract.oauth_token_secret;
               // @flow STEP1.2:
@@ -285,11 +275,20 @@ var NetpieAuth = exports.NetpieAuth = function () {
 
               // @flow STEP2:
               // GET ACCESS TOKEN
-              _context4.next = 13;
+              _context4.next = 11;
               return _this._getAccessToken();
 
-            case 13:
+            case 11:
               req2_resp = _context4.sent;
+
+              if (req2_resp.ok) {
+                _context4.next = 14;
+                break;
+              }
+
+              throw new Error('Reached maximum (devices) quota.');
+
+            case 14:
               _context4.t0 = _this;
               _context4.next = 17;
               return req2_resp.text();
@@ -324,19 +323,11 @@ var NetpieAuth = exports.NetpieAuth = function () {
               throw new Error(err.message);
 
             case 26:
-              return _context4.abrupt('return', token);
-
-            case 29:
-              _context4.prev = 29;
-              _context4.t2 = _context4['catch'](1);
-              throw _context4.t2;
-
-            case 32:
             case 'end':
               return _context4.stop();
           }
         }
-      }, _callee4, _this, [[1, 29]]);
+      }, _callee4, _this);
     }));
 
     this.appid = props.appid;
@@ -349,7 +340,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
   (0, _createClass3.default)(NetpieAuth, [{
     key: 'initSync',
     value: function () {
-      var _ref7 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee5() {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
         var access_token_cached, access_token_secret_cached, revoke_token_cached, appid_cached, appkey_cached, appsecret_cached, should_revoke, resp, revoke_text;
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -373,7 +364,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 Util.log('REVOKE URL = ' + gearauthurl + '/api/revoke/' + access_token_cached + '/' + revoke_token_cached);
                 _context5.prev = 11;
                 _context5.next = 14;
-                return this.build_request_object('/api/revoke/' + access_token_cached + '/' + revoke_token_cached, 'GET').request(function () {});
+                return this.buildRequestObject('/api/revoke/' + access_token_cached + '/' + revoke_token_cached, 'GET').request(function () {});
 
               case 14:
                 resp = _context5.sent;
@@ -447,7 +438,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
   }, {
     key: 'request',
     value: function () {
-      var _ref8 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee6(data, header_authorization_fn) {
+      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(data, header_authorization_fn) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
@@ -475,8 +466,8 @@ var NetpieAuth = exports.NetpieAuth = function () {
       return request;
     }()
   }, {
-    key: 'build_request_object',
-    value: function build_request_object(uri) {
+    key: 'buildRequestObject',
+    value: function buildRequestObject(uri) {
       var _this2 = this;
 
       var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'POST';
