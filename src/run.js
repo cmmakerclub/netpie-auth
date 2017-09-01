@@ -5,7 +5,7 @@ const appkey = 'NhPwKvkJFLXYGfd'
 const appsecret = 'G5mY73QQK18g9js7ffDJnJt4t'
 
 let netpie = new NetpieAuth({appid: appid, appkey: appkey, appsecret: appsecret})
-netpie.initSync()
+
 netpie.getMqttAuth((mqttAuthStruct) => {
   Object.keys(mqttAuthStruct).forEach((key, idx) => {
     console.log(`${key} => ${mqttAuthStruct[key]}`)

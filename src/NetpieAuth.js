@@ -21,6 +21,7 @@ export class NetpieAuth {
     this.appkey = props.appkey
     this.appsecret = props.appsecret
     this.prepare(props)
+    this.initSync()
   }
 
   async initSync () {
