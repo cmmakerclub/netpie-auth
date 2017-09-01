@@ -10,6 +10,18 @@ var _inquirer = require('inquirer');
 
 var _inquirer2 = _interopRequireDefault(_inquirer);
 
+var _clear = require('clear');
+
+var _clear2 = _interopRequireDefault(_clear);
+
+var _chalk = require('chalk');
+
+var _chalk2 = _interopRequireDefault(_chalk);
+
+var _figlet = require('figlet');
+
+var _figlet2 = _interopRequireDefault(_figlet);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var configStore = require('./Configstore');
@@ -18,6 +30,11 @@ var program = require('commander');
 program.usage('[options]').version(pkg.version).option('-i, --id <required>', 'netpie appId is required').option('-k, --key <required>', 'netpie appKey').option('-s, --secret <required>', 'netpie appSecret');
 
 program.parse(process.argv);
+
+function showFiglet() {
+  (0, _clear2.default)();
+  console.log(_chalk2.default.magenta(_figlet2.default.textSync(require('../package.json').name, { horizontalLayout: 'full' })));
+}
 
 var validateNotNull = function validateNotNull(input) {
   if (input) {
@@ -45,6 +62,7 @@ var connectNetpie = function connectNetpie() {
   });
 };
 
+showFiglet();
 var displayInquirer = function displayInquirer(callback) {
   var questions = [{
     type: 'input',

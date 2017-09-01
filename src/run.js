@@ -1,6 +1,9 @@
 import { NetpieAuth } from './NetpieAuth'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
+import clear from 'clear'
+import chalk from 'chalk'
+import figlet from 'figlet'
 
 const configStore = require('./Configstore')
 const pkg = require('../package.json')
@@ -13,6 +16,15 @@ program
   .option('-s, --secret <required>', 'netpie appSecret')
 
 program.parse(process.argv)
+
+function showFiglet () {
+  clear()
+  console.log(
+    chalk.magenta(
+      figlet.textSync(require('../package.json').name, {horizontalLayout: 'full'})
+    )
+  )
+}
 
 const validateNotNull = (input) => {
   if (input) {
@@ -41,6 +53,7 @@ const connectNetpie = () => {
   })
 }
 
+showFiglet()
 const displayInquirer = (callback) => {
   var questions = [
     {

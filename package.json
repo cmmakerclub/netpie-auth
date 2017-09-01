@@ -1,6 +1,6 @@
 {
   "name": "netpie-auth",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "dist/run.js",
   "bin": {
@@ -26,10 +26,13 @@
   },
   "dependencies": {
     "babel-runtime": "^6.22.0",
+    "chalk": "^2.1.0",
+    "clear": "^0.0.1",
     "cli-table": "^0.3.1",
     "commander": "^2.11.0",
     "configstore": "^3.1.1",
     "crypto-js": "^3.1.9-1",
+    "figlet": "^1.2.0",
     "inquirer": "^3.2.3",
     "key-mirror": "^1.0.1",
     "node-fetch": "^1.6.3",
