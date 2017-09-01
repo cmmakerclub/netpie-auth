@@ -32,11 +32,10 @@ export class NetpieAuth {
     let appkey_cached = this._storage.get(Storage.KEY_APP_KEY)
     let appsecret_cached = this._storage.get(Storage.KEY_APP_SECRET)
 
-    // console.log(this._storage)
     let should_revoke = ((this.appid !== appid_cached) || (this.appkey !== appkey_cached) ||
       (this.appsecret !== appsecret_cached) && appid_cached && appkey_cached && appsecret_cached)
 
-    if (should_revoke) {
+    if (false && should_revoke) {
       Util.log(`[CACHED] => ${access_token_cached} - ${access_token_secret_cached}, ${revoke_token_cached}`)
       Util.log(`REVOKE URL = ${gearauthurl}/api/revoke/${access_token_cached}/${revoke_token_cached}`)
       try {
@@ -83,16 +82,15 @@ export class NetpieAuth {
       }
       callback.apply(this, [ret])
     }
+    else if (this._storage.get(Storage.KEY_STATE) === Storage.STATE.STATE_REQ_TOKEN) {
+      console.log('req token')
+      return this.getMqttAuth(callback)
+    }
     else {
+      // first request
       try {
-        let token = await this.getToken()
-        console.log(`88 token = ${token}`)
-        if (token !== null) {
-          return this.getMqttAuth(callback)
-        }
-        else {
-          return null
-        }
+        await this.getOAuthToken()
+        this.getMqttAuth(callback)
       }
       catch (err) {
         throw err
@@ -207,11 +205,10 @@ export class NetpieAuth {
     this._storage.commit()
   }
 
-  getToken = async () => {
+  getOAuthToken = async () => {
     let token = null
     try {
       Util.log(`NetpieAuth.js ${this}`)
-
       // @flow STEP1:
       // GET REQUEST TOKEN
       let req1_resp = await this._getRequestToken()
