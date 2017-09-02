@@ -1,4 +1,4 @@
-# NETPIE
+# NETPIE-auth
 
 ## Installation
 
