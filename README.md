@@ -1,4 +1,4 @@
-# NETPIE-Auth
+# NETPIE
 
 ## Installation
 
@@ -17,7 +17,7 @@ run as background container (netpie credentials cached inside container)
 	
 	$ docker run -d -name netpie-auth-container cmmc/netpie-auth
 	$ docker exec -it netpie-auth-container netpie-auth
-	# tips
+	$ # tips
 	$ alias netpie-auth="docker exec -it netpie-auth-container netpie-auth"
 	$ netpie-auth
 
@@ -27,6 +27,3 @@ run as background container (netpie credentials cached inside container)
 	$ netpie-auth --help
 	$ netpie-auth -i CMMCIO -k NhPwKvkJFLXYGfd -s G5mY73QQK18g9js7ffDJnJt4t2
 	$ netpie-auth --id CMMCIO --key NhPwKvkJFLXYGfd --secret G5mY73QQK18g9js7ffDJnJt4t2
-
-
-	
