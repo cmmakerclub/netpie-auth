@@ -71,7 +71,7 @@ export class NetpieAuth {
       let mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey)
       let [input, protocol, host, port] = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/)
       let revoke_token = Util.compute_revoke_code(access_token, hkey)
-      console.log(`revoke_token = ${revoke_token}`)
+      Util.debug(`revoke_token = ${revoke_token}`)
       let ret = {
         revoke_token, appid, host, port, endpoint,
         username: mqttusername,
@@ -82,7 +82,7 @@ export class NetpieAuth {
       callback.apply(this, [ret])
     }
     else if (this._storage.get(Storage.KEY_STATE) === Storage.STATE.STATE_REQ_TOKEN) {
-      console.log('req token')
+      Util.debug('req token')
       return this.getMqttAuth(callback)
     }
     else {
@@ -90,7 +90,7 @@ export class NetpieAuth {
       await this.getOAuthToken().then(() => {
         this.getMqttAuth(callback)
       }).catch((ex) => {
-        console.log('Error => ', ex.message)
+        Util.debug('Error => ', ex.message)
         // throw ex
       })
     }

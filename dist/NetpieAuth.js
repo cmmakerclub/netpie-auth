@@ -81,7 +81,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 _endpoint$match = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/), _endpoint$match2 = (0, _slicedToArray3.default)(_endpoint$match, 4), input = _endpoint$match2[0], protocol = _endpoint$match2[1], host = _endpoint$match2[2], port = _endpoint$match2[3];
                 revoke_token = Util.compute_revoke_code(access_token, hkey);
 
-                console.log('revoke_token = ' + revoke_token);
+                Util.debug('revoke_token = ' + revoke_token);
                 ret = {
                   revoke_token: revoke_token, appid: appid, host: host, port: port, endpoint: endpoint,
                   username: mqttusername,
@@ -100,7 +100,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   break;
                 }
 
-                console.log('req token');
+                Util.debug('req token');
                 return _context.abrupt('return', _this.getMqttAuth(callback));
 
               case 20:
@@ -108,7 +108,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 return _this.getOAuthToken().then(function () {
                   _this.getMqttAuth(callback);
                 }).catch(function (ex) {
-                  console.log('Error => ', ex.message);
+                  Util.debug('Error => ', ex.message);
                   // throw ex
                 });
 
