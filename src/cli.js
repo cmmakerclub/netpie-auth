@@ -11,9 +11,11 @@ const program = require('commander')
 program
   .usage('[options]')
   .version(pkg.version)
-  .option('-i, --id <required>', 'netpie appId is required')
+  .option('-i, --id <required>', 'netpie appId')
   .option('-k, --key <required>', 'netpie appKey')
   .option('-s, --secret <required>', 'netpie appSecret')
+  .option('-j, --json-only [optional]>', 'output as json format')
+  .option('-z, --show-sed-command [optional]>', 'show sed command')
 
 program.parse(process.argv)
 
@@ -48,9 +50,25 @@ const connectNetpie = () => {
     table.push([mqtt.username, mqtt.password, mqtt.client_id, mqtt.prefix, mqtt.host, mqtt.port])
     let {username, password, client_id, prefix, host, port} = mqtt
 
-    console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`)
-
-    console.log(table.toString())
+    if (program.jsonOnly) {
+      console.log(mqtt)
+    }
+    else {
+      if (program.showSedCommand) {
+        const sedCommand = `NETPIE_APP_ID=${appid} 
+MQTT_USERNAME=${username}
+MQTT_PASSWORD=${password}
+MQTT_CLIENT_ID=${client_id}
+TOPIC_PREFIX="\\\\/$NETPIE_APP_ID\\\\/gearname \\\\/$NETPIE_APP_ID\\\\/gearname"
+sed -Ei "s/remote_username (.+)/remote_username $MQTT_USERNAME/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf
+sed -Ei "s/remote_password (.+)/remote_password $MQTT_PASSWORD/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf
+sed -Ei "s/remote_clientid (.+)/remote_clientid $MQTT_CLIENT_ID/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf
+sed -Ei "s/\\\\/(.+)\\\\/gearname/$TOPIC_PREFIX/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf`
+        console.log(sedCommand)
+      }
+      console.log(table.toString())
+      console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`)
+    }
   })
 }
 

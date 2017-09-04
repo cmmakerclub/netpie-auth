@@ -27,7 +27,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var configStore = require('./Configstore');
 var pkg = require('../package.json');
 var program = require('commander');
-program.usage('[options]').version(pkg.version).option('-i, --id <required>', 'netpie appId is required').option('-k, --key <required>', 'netpie appKey').option('-s, --secret <required>', 'netpie appSecret');
+program.usage('[options]').version(pkg.version).option('-i, --id <required>', 'netpie appId').option('-k, --key <required>', 'netpie appKey').option('-s, --secret <required>', 'netpie appSecret').option('-j, --json-only [optional]>', 'output as json format').option('-z, --show-sed-command [optional]>', 'show sed command');
 
 program.parse(process.argv);
 
@@ -63,9 +63,16 @@ var connectNetpie = function connectNetpie() {
         port = mqtt.port;
 
 
-    console.log('mosquitto_sub -t "' + prefix + '/#" -h ' + host + ' -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -p ' + port + ' -d');
-
-    console.log(table.toString());
+    if (program.jsonOnly) {
+      console.log(mqtt);
+    } else {
+      if (program.showSedCommand) {
+        var sedCommand = 'NETPIE_APP_ID=' + appid + ' \nMQTT_USERNAME=' + username + '\nMQTT_PASSWORD=' + password + '\nMQTT_CLIENT_ID=' + client_id + '\nTOPIC_PREFIX="\\\\/$NETPIE_APP_ID\\\\/gearname \\\\/$NETPIE_APP_ID\\\\/gearname"\nsed -Ei "s/remote_username (.+)/remote_username $MQTT_USERNAME/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf\nsed -Ei "s/remote_password (.+)/remote_password $MQTT_PASSWORD/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf\nsed -Ei "s/remote_clientid (.+)/remote_clientid $MQTT_CLIENT_ID/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf\nsed -Ei "s/\\\\/(.+)\\\\/gearname/$TOPIC_PREFIX/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf';
+        console.log(sedCommand);
+      }
+      console.log(table.toString());
+      console.log('mosquitto_sub -t "' + prefix + '/#" -h ' + host + ' -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -p ' + port + ' -d');
+    }
   });
 };
 
