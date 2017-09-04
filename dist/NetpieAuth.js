@@ -109,7 +109,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   _this.getMqttAuth(callback);
                 }).catch(function (ex) {
                   Util.debug('Error => ', ex.message);
-                  // throw ex
+                  throw ex;
                 });
 
               case 22:
@@ -318,7 +318,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               err = {
                 name: 'NetpieError',
                 type: 'Invalid AppKey or AppSecret',
-                message: req1_resp.status + ' ' + req1_resp.statusText + ' (Invalid App/Secret Key)'
+                message: req1_resp.status + ' ' + req1_resp.statusText + ' (Invalid AppKey or AppSecret)'
               };
               throw new Error(err.message);
 

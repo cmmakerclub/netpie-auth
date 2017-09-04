@@ -15,9 +15,11 @@ on time generation (container will be destroyed after CTRL -C)
 	
 run as background container (netpie credentials cached inside container)
 	
-	$ docker run -d -name netpie-auth-container cmmc/netpie-auth
+	$ docker run -d -it --name netpie-auth-container cmmc/netpie-auth
 	$ docker exec -it netpie-auth-container netpie-auth
-	$ # tips
+	
+### aliasing
+
 	$ alias netpie-auth="docker exec -it netpie-auth-container netpie-auth"
 	$ netpie-auth
 

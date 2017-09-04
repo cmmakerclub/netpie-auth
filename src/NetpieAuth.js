@@ -91,7 +91,7 @@ export class NetpieAuth {
         this.getMqttAuth(callback)
       }).catch((ex) => {
         Util.debug('Error => ', ex.message)
-        // throw ex
+        throw ex
       })
     }
   }
@@ -239,7 +239,7 @@ export class NetpieAuth {
       let err = {
         name: 'NetpieError',
         type: 'Invalid AppKey or AppSecret',
-        message: `${req1_resp.status} ${req1_resp.statusText} (Invalid App/Secret Key)`
+        message: `${req1_resp.status} ${req1_resp.statusText} (Invalid AppKey or AppSecret)`
       }
       throw new Error(err.message)
     }

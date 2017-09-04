@@ -47,6 +47,7 @@ const connectNetpie = () => {
 
   const netpie = new NetpieAuth({appid, appkey, appsecret})
   netpie.getMqttAuth((mqtt) => {
+    console.log('mqtt => ', mqtt)
     table.push([mqtt.username, mqtt.password, mqtt.client_id, mqtt.prefix, mqtt.host, mqtt.port])
     let {username, password, client_id, prefix, host, port} = mqtt
 
@@ -69,6 +70,8 @@ sed -Ei "s/\\\\/(.+)\\\\/gearname/$TOPIC_PREFIX/g" $HOME/mosquitto-conf/config/c
       console.log(table.toString())
       console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`)
     }
+  }).catch((error) => {
+    console.error(error.message)
   })
 }
 
