@@ -54,10 +54,17 @@ var connectNetpie = function connectNetpie() {
 
   var netpie = new _NetpieAuth.NetpieAuth({ appid: appid, appkey: appkey, appsecret: appsecret });
   netpie.getMqttAuth(function (mqtt) {
-    // Object.keys(mqtt).forEach((key, idx) => {
-    //   console.log(`${key} => ${mqtt[key]}`)
-    // })
     table.push([mqtt.username, mqtt.password, mqtt.client_id, mqtt.prefix, mqtt.host, mqtt.port]);
+    var username = mqtt.username,
+        password = mqtt.password,
+        client_id = mqtt.client_id,
+        prefix = mqtt.prefix,
+        host = mqtt.host,
+        port = mqtt.port;
+
+
+    console.log('mosquitto_sub -t "' + prefix + '/#" -h ' + host + ' -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -p ' + port + ' -d');
+
     console.log(table.toString());
   });
 };
