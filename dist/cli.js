@@ -27,7 +27,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var configStore = require('./Configstore');
 var pkg = require('../package.json');
 var program = require('commander');
-program.usage('[options]').version(pkg.version).option('-i, --id [optional]', 'netpie appId').option('-k, --key [optional]', 'netpie appKey').option('-s, --secret [optional]', 'netpie appSecret').option('-j, --json-only [optional]', 'output as json format').option('-z, --show-sed-command [optional]', 'show sed command');
+program.usage('[options]').version(pkg.version).option('-i, --id [optional]', 'netpie appId').option('-k, --key [optional]', 'netpie appKey').option('-s, --secret [optional]', 'netpie appSecret').option('-j, --json-only [optional]', 'output as json format').option('-m, --mosquitto-bridge-config', 'show mosquitto bridge conig').option('-z, --show-sed-command [optional]', 'show sed command');
 
 program.parse(process.argv);
 
@@ -69,9 +69,12 @@ var connectNetpie = function connectNetpie() {
       if (program.showSedCommand) {
         var sedCommand = 'export NETPIE_APP_ID=' + appid + ' \nexport MQTT_USERNAME=' + username + '\nexport MQTT_PASSWORD=' + password.replace('/', '\\/') + '\nexport MQTT_CLIENT_ID=' + client_id + '\nexport TOPIC_PREFIX="\\\\/$NETPIE_APP_ID\\\\/gearname\\/ \\\\/$NETPIE_APP_ID\\\\/gearname\\/"\nsed -Ei "s/remote_username (.+)/remote_username $MQTT_USERNAME/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf\nsed -Ei "s/remote_password (.+)/remote_password $MQTT_PASSWORD/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf\nsed -Ei "s/remote_clientid (.+)/remote_clientid $MQTT_CLIENT_ID/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf\nsed -Ei "s/\\\\/(.+)\\\\/gearname\\//$TOPIC_PREFIX/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf';
         console.log(sedCommand);
+      } else if (program.mosquittoBridgeConfig) {
+        console.log('mosquitto bridge config');
+      } else {
+        console.log(table.toString());
+        console.log('mosquitto_sub -t "' + prefix + '#" -h ' + host + ' -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -p ' + port + ' -d');
       }
-      console.log(table.toString());
-      console.log('mosquitto_sub -t "' + prefix + '#" -h ' + host + ' -i ' + client_id + ' -u "' + username + '" -P "' + password + '" -p ' + port + ' -d');
     }
   }).catch(function (error) {
     console.error(error.message);

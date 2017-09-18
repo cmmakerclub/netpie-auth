@@ -14,11 +14,7 @@ var Util = exports.Util = {
     if (process.env.DEBUG) console.log.apply(console, args);
   },
   log: function log() {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      args[_key2] = arguments[_key2];
-    }
-
-    console.log.apply(console, args);
+    // console.log.apply(console, args)
   },
   base64: function base64(text) {
     return text.toString(CryptoJS.enc.Base64);
