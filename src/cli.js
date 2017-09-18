@@ -11,11 +11,11 @@ const program = require('commander')
 program
   .usage('[options]')
   .version(pkg.version)
-  .option('-i, --id <required>', 'netpie appId')
-  .option('-k, --key <required>', 'netpie appKey')
-  .option('-s, --secret <required>', 'netpie appSecret')
-  .option('-j, --json-only [optional]>', 'output as json format')
-  .option('-z, --show-sed-command [optional]>', 'show sed command')
+  .option('-i, --id [optional]', 'netpie appId')
+  .option('-k, --key [optional]', 'netpie appKey')
+  .option('-s, --secret [optional]', 'netpie appSecret')
+  .option('-j, --json-only [optional]', 'output as json format')
+  .option('-z, --show-sed-command [optional]', 'show sed command')
 
 program.parse(process.argv)
 
@@ -47,7 +47,6 @@ const connectNetpie = () => {
 
   const netpie = new NetpieAuth({appid, appkey, appsecret})
   netpie.getMqttAuth((mqtt) => {
-    console.log('mqtt => ', mqtt)
     table.push([mqtt.username, mqtt.password, mqtt.client_id, mqtt.prefix, mqtt.host, mqtt.port])
     let {username, password, client_id, prefix, host, port} = mqtt
 
@@ -56,19 +55,19 @@ const connectNetpie = () => {
     }
     else {
       if (program.showSedCommand) {
-        const sedCommand = `NETPIE_APP_ID=${appid} 
-MQTT_USERNAME=${username}
-MQTT_PASSWORD=${password}
-MQTT_CLIENT_ID=${client_id}
-TOPIC_PREFIX="\\\\/$NETPIE_APP_ID\\\\/gearname \\\\/$NETPIE_APP_ID\\\\/gearname"
+        const sedCommand = `export NETPIE_APP_ID=${appid} 
+export MQTT_USERNAME=${username}
+export MQTT_PASSWORD=${password.replace('/', '\\/')}
+export MQTT_CLIENT_ID=${client_id}
+export TOPIC_PREFIX="\\\\/$NETPIE_APP_ID\\\\/gearname\\/ \\\\/$NETPIE_APP_ID\\\\/gearname\\/"
 sed -Ei "s/remote_username (.+)/remote_username $MQTT_USERNAME/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf
 sed -Ei "s/remote_password (.+)/remote_password $MQTT_PASSWORD/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf
 sed -Ei "s/remote_clientid (.+)/remote_clientid $MQTT_CLIENT_ID/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf
-sed -Ei "s/\\\\/(.+)\\\\/gearname/$TOPIC_PREFIX/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf`
+sed -Ei "s/\\\\/(.+)\\\\/gearname\\//$TOPIC_PREFIX/g" $HOME/mosquitto-conf/config/conf.d/bridges.conf`
         console.log(sedCommand)
       }
       console.log(table.toString())
-      console.log(`mosquitto_sub -t "${prefix}/#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`)
+      console.log(`mosquitto_sub -t "${prefix}#" -h ${host} -i ${client_id} -u "${username}" -P "${password}" -p ${port} -d`)
     }
   }).catch((error) => {
     console.error(error.message)
@@ -76,25 +75,31 @@ sed -Ei "s/\\\\/(.+)\\\\/gearname/$TOPIC_PREFIX/g" $HOME/mosquitto-conf/config/c
 }
 
 showFiglet()
+const preId = program.id
+const preKey = program.key
+const preSecret = program.secret
+
 const displayInquirer = (callback) => {
   var questions = [
     {
       type: 'input',
       name: 'id',
-      default: configStore.get('id'),
+      default: preId || configStore.get('id'),
       validate: validateNotNull,
       message: 'Netpie app id'
     },
     {
       type: 'input',
       name: 'key',
-      default: configStore.get('key'),
+      validate: validateNotNull,
+      default: preKey || configStore.get('key'),
       message: 'Netpie app key'
     },
     {
       type: 'input',
       name: 'secret',
-      default: configStore.get('secret'),
+      validate: validateNotNull,
+      default: preSecret || configStore.get('secret'),
       message: 'Netpie app secret'
     },
   ]

@@ -77,7 +77,7 @@ export class NetpieAuth {
         username: mqttusername,
         password: mqttpassword,
         client_id: access_token,
-        prefix: `/${appid}/gearname`
+        prefix: `/${appid}/gearname/`
       }
       callback.apply(this, [ret])
     }
