@@ -2,6 +2,8 @@
 
 var _NetpieAuth = require('./NetpieAuth');
 
+var _DevicedData = require('./DevicedData');
+
 var _cliTable = require('cli-table');
 
 var _cliTable2 = _interopRequireDefault(_cliTable);
@@ -25,9 +27,10 @@ var _figlet2 = _interopRequireDefault(_figlet);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var configStore = require('./Configstore');
+var fs = require('fs');
 var pkg = require('../package.json');
 var program = require('commander');
-program.usage('[options]').version(pkg.version).option('-i, --id [optional]', 'netpie appId').option('-k, --key [optional]', 'netpie appKey').option('-s, --secret [optional]', 'netpie appSecret').option('-j, --json-only [optional]', 'output as json format').option('-m, --mosquitto-bridge-config', 'show mosquitto bridge conig').option('-z, --show-sed-command [optional]', 'show sed command');
+program.usage('[options]').version(pkg.version).option('-i, --id [optional]', 'netpie appId').option('-k, --key [optional]', 'netpie appKey').option('-s, --secret [optional]', 'netpie appSecret').option('-j, --json-only [optional]', 'output as json format').option('-m, --mosquitto-bridge-config', 'show mosquitto bridge conig').option('-z, --show-sed-command [optional]', 'show sed command').option('-l, --list', 'show list');
 
 program.parse(process.argv);
 
@@ -62,6 +65,50 @@ var connectNetpie = function connectNetpie() {
         host = mqtt.host,
         port = mqtt.port;
 
+
+    var deviceData = new _DevicedData.DevicedData();
+    var useDir = deviceData.UserDir();
+
+    var configFolder = useDir;
+    var appID = appid;
+    var configFileName = deviceData.Prefix() + appID + ".json";
+    var fullFilePath = configFolder + "/" + configFileName;
+
+    var key = appkey;
+    var secret = appsecret;
+
+    if (fs.existsSync(configFolder) == false) {
+      fs.mkdirSync(configFolder);
+    }
+
+    if (fs.existsSync(fullFilePath) == false) {
+      var initData = {};
+      initData[appID] = {};
+
+      var newAppData = {};
+      newAppData.key = key;
+      newAppData.secret = secret;
+      newAppData.data = [];
+
+      initData[appID][key] = newAppData;
+
+      fs.writeFileSync(fullFilePath, JSON.stringify(initData, null, 4), 'utf8');
+    }
+
+    var saveData = fs.readFileSync(fullFilePath, 'utf8');
+    saveData = JSON.parse(saveData);
+
+    var newDevice = {};
+    newDevice.Username = mqtt.username;
+    newDevice.Password = mqtt.password;
+    newDevice.ClientId = mqtt.client_id;
+    newDevice.Prefix = mqtt.prefix;
+    newDevice.Host = mqtt.host;
+    newDevice.Port = mqtt.port;
+
+    saveData[appID][key].data.push(newDevice);
+
+    fs.writeFileSync(fullFilePath, JSON.stringify(saveData, null, 4), 'utf8');
 
     if (program.jsonOnly) {
       console.log(mqtt);
@@ -110,7 +157,35 @@ var displayInquirer = function displayInquirer(callback) {
   _inquirer2.default.prompt(questions).then(callback);
 };
 
-if (!program.id || !program.key || !program.secret) {
+if (program.list) {
+
+  var deviceData = new _DevicedData.DevicedData();
+  var list = deviceData.getList();
+
+  for (var i = 0; i < list.length; i++) {
+    // app
+    var appID = Object.keys(list[i])[0];
+    var appKey = Object.keys(list[i][appID])[0];
+    var appSecret = list[i][appID][appKey].secret;
+    var data = list[i][appID][appKey].data;
+    console.log("App ID:\t\t" + appID);
+    console.log("App Key:\t" + appKey);
+    console.log("Aapp Secret:\t" + appSecret);
+
+    var head = ['Username', 'Password', 'ClientId', 'Prefix', 'Host', 'Port'];
+    var table = new _cliTable2.default({ head: head, style: { head: ['green'] } });
+
+    for (var j = 0; j < data.length; j++) {
+      table.push([data[j].Username, data[j].Password, data[j].ClientId, data[j].Prefix, data[j].Host, data[j].Port]);
+    }
+
+    console.log(table.toString());
+  }
+
+  if (list.length == 0) {
+    console.log("Empty");
+  }
+} else if (!program.id || !program.key || !program.secret) {
   displayInquirer(function (ans) {
     configStore.set('id', ans.id);
     configStore.set('key', ans.key);

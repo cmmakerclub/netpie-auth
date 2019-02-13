@@ -1,4 +1,5 @@
 import { NetpieAuth } from './NetpieAuth';
+import { DevicedData } from './DevicedData';
 import Table from 'cli-table';
 import inquirer from 'inquirer';
 import clear from 'clear';
@@ -6,6 +7,7 @@ import chalk from 'chalk';
 import figlet from 'figlet';
 
 const configStore = require('./Configstore');
+const fs = require('fs');
 const pkg = require('../package.json');
 const program = require('commander');
 program
@@ -16,7 +18,9 @@ program
   .option('-s, --secret [optional]', 'netpie appSecret')
   .option('-j, --json-only [optional]', 'output as json format')
   .option('-m, --mosquitto-bridge-config', 'show mosquitto bridge conig')
-  .option('-z, --show-sed-command [optional]', 'show sed command');
+  .option('-z, --show-sed-command [optional]', 'show sed command')
+  .option('-l, --list', 'show list')
+
 
 program.parse(process.argv);
 
@@ -50,6 +54,52 @@ const connectNetpie = () => {
   netpie.getMqttAuth((mqtt) => {
     table.push([mqtt.username, mqtt.password, mqtt.client_id, mqtt.prefix, mqtt.host, mqtt.port]);
     let {username, password, client_id, prefix, host, port} = mqtt;
+
+    const deviceData = new DevicedData();
+    var useDir = deviceData.UserDir();
+
+    var configFolder = useDir;
+    var appID = appid;
+    var configFileName = deviceData.Prefix() + appID + ".json";
+    var fullFilePath = configFolder + "/" + configFileName;
+
+    var key = appkey;
+    var secret = appsecret;
+
+    if (fs.existsSync(configFolder) == false) 
+    {
+      fs.mkdirSync(configFolder);
+    }
+
+    if (fs.existsSync(fullFilePath) == false) 
+    {
+      var initData = {};
+      initData[appID] = {};
+
+      var newAppData = {};
+      newAppData.key = key;
+      newAppData.secret = secret;
+      newAppData.data = [];
+
+      initData[appID][key] = newAppData;
+
+      fs.writeFileSync(fullFilePath, JSON.stringify(initData, null, 4), 'utf8');
+    }
+
+    var saveData = fs.readFileSync(fullFilePath ,'utf8');
+    saveData = JSON.parse(saveData);
+
+    var newDevice = {};
+    newDevice.Username = mqtt.username;
+    newDevice.Password = mqtt.password;
+    newDevice.ClientId = mqtt.client_id;
+    newDevice.Prefix = mqtt.prefix;
+    newDevice.Host = mqtt.host;
+    newDevice.Port = mqtt.port;
+
+    saveData[appID][key].data.push(newDevice);
+
+    fs.writeFileSync(fullFilePath, JSON.stringify(saveData, null, 4), 'utf8');
 
     if (program.jsonOnly) {
       console.log(mqtt);
@@ -113,7 +163,40 @@ const displayInquirer = (callback) => {
 
 };
 
-if (!program.id || !program.key || !program.secret) {
+if (program.list) {
+
+  const deviceData = new DevicedData();
+  var list = deviceData.getList();
+
+  for (var i = 0; i < list.length; i++)
+  {
+    // app
+    var appID = Object.keys(list[i])[0];
+    var appKey = Object.keys(list[i][appID])[0]
+    var appSecret = list[i][appID][appKey].secret
+    var data = list[i][appID][appKey].data;
+    console.log("App ID:\t\t" + appID)
+    console.log("App Key:\t" + appKey)
+    console.log("Aapp Secret:\t" + appSecret)
+
+    const head = ['Username', 'Password', 'ClientId', 'Prefix', 'Host', 'Port'];
+    const table = new Table({head, style: {head: ['green']}});
+
+    for (var j = 0; j < data.length; j++)
+    {
+      table.push([data[j].Username, data[j].Password, data[j].ClientId, data[j].Prefix, data[j].Host, data[j].Port]);
+    }
+
+    console.log(table.toString());
+  }
+
+  if (list.length == 0)
+  {
+    console.log("Empty");
+  }
+
+}
+else if (!program.id || !program.key || !program.secret) {
   displayInquirer((ans) => {
     configStore.set('id', ans.id);
     configStore.set('key', ans.key);
@@ -127,4 +210,3 @@ else {
   configStore.set('secret', program.secret);
   connectNetpie();
 }
-
