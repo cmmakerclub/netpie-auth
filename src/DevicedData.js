@@ -18,18 +18,16 @@ var DevicedData = exports.DevicedData = function () {
       return prefix;
     }
 
-    this.UserDir = function ()
-    {
+    this.UserDir = function () {
       return useDir;
     }
 
     this.getList = function () {
 
       var configFolder = useDir + postfix;
-      
-      if (fs.existsSync(configFolder) == false)
-      {
-        return []; 
+
+      if (fs.existsSync(configFolder) == false) {
+        return [];
       }
 
       var files = fs.readdirSync(configFolder);
@@ -37,18 +35,18 @@ var DevicedData = exports.DevicedData = function () {
       for (var i in files) {
         var fullFilePath = configFolder + "/" + files[i];
 
-        if (fullFilePath.indexOf(prefix) == -1)
-        {
+        if (fullFilePath.indexOf(prefix) == -1) {
           continue;
         }
 
-        var fileData = fs.readFileSync(fullFilePath ,'utf8');
+        var fileData = fs.readFileSync(fullFilePath, 'utf8');
         fileData = JSON.parse(fileData);
         filesData.push(fileData)
       }
       return filesData;
     }
   }
+
   return DevicedData;
 }();
 
