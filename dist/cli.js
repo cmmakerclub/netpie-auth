@@ -106,6 +106,14 @@ var connectNetpie = function connectNetpie() {
     newDevice.Host = mqtt.host;
     newDevice.Port = mqtt.port;
 
+    if (typeof saveData[appID][key] == "undefined") {
+      var newAppData = {};
+      newAppData.key = key;
+      newAppData.secret = secret;
+      newAppData.data = [];
+      saveData[appID][key] = newAppData;
+    }
+
     saveData[appID][key].data.push(newDevice);
 
     fs.writeFileSync(fullFilePath, JSON.stringify(saveData, null, 4), 'utf8');
