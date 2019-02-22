@@ -181,22 +181,27 @@ if (program.list) {
   {
     // app
     var appID = Object.keys(list[i])[0];
-    var appKey = Object.keys(list[i][appID])[0]
-    var appSecret = list[i][appID][appKey].secret
-    var data = list[i][appID][appKey].data;
     console.log("App ID:\t\t" + appID)
-    console.log("App Key:\t" + appKey)
-    console.log("Aapp Secret:\t" + appSecret)
-
-    const head = ['Username', 'Password', 'ClientId', 'Prefix', 'Host', 'Port'];
-    const table = new Table({head, style: {head: ['green']}});
-
-    for (var j = 0; j < data.length; j++)
+    
+    for (var k = 0; k < Object.keys(list[i][appID]).length; k++)
     {
-      table.push([data[j].Username, data[j].Password, data[j].ClientId, data[j].Prefix, data[j].Host, data[j].Port]);
-    }
+      var appKey = Object.keys(list[i][appID])[k]
+      var appSecret = list[i][appID][appKey].secret
+      var data = list[i][appID][appKey].data;
+      
+      console.log("App Key:\t" + appKey)
+      console.log("Aapp Secret:\t" + appSecret)
 
-    console.log(table.toString());
+      const head = ['Username', 'Password', 'ClientId', 'Prefix', 'Host', 'Port'];
+      const table = new Table({head, style: {head: ['green']}});
+
+      for (var j = 0; j < data.length; j++)
+      {
+        table.push([data[j].Username, data[j].Password, data[j].ClientId, data[j].Prefix, data[j].Host, data[j].Port]);
+      }
+
+      console.log(table.toString());
+    }
   }
 
   if (list.length == 0)
