@@ -1,33 +1,33 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.NetpieAuth = undefined;
 
-var _regenerator = require('babel-runtime/regenerator');
+var _regenerator = require("babel-runtime/regenerator");
 
 var _regenerator2 = _interopRequireDefault(_regenerator);
 
-var _slicedToArray2 = require('babel-runtime/helpers/slicedToArray');
+var _slicedToArray2 = require("babel-runtime/helpers/slicedToArray");
 
 var _slicedToArray3 = _interopRequireDefault(_slicedToArray2);
 
-var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+var _asyncToGenerator2 = require("babel-runtime/helpers/asyncToGenerator");
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
-var _CStorage = require('./CStorage');
+var _CStorage = require("./CStorage");
 
-var _Util = require('./Util');
+var _Util = require("./Util");
 
 var Helper = _interopRequireWildcard(_Util);
 
@@ -35,18 +35,18 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var OAuth = require('oauth-1.0a');
-var fetch = require('node-fetch');
+var OAuth = require("oauth-1.0a");
+var fetch = require("node-fetch");
 
 
 var Util = Helper.Util;
 
-var VERSION = '1.0.9';
-var GEARAPIADDRESS = 'ga.netpie.io';
-var GEARAPIPORT = '8080';
-var MGREV = 'NJS1a';
+var VERSION = "1.0.9";
+var GEARAPIADDRESS = "ga.netpie.io";
+var GEARAPIPORT = "8080";
+var MGREV = "NJS1a";
 
-var gearauthurl = 'http://' + GEARAPIADDRESS + ':' + GEARAPIPORT;
+var gearauthurl = "http://" + GEARAPIADDRESS + ":" + GEARAPIPORT;
 var verifier = MGREV;
 
 var NetpieAuth = exports.NetpieAuth = function () {
@@ -69,25 +69,25 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   break;
                 }
 
-                Util.debug('STATE = ACCESS_TOKEN');
+                Util.debug("STATE = ACCESS_TOKEN");
                 _ref2 = [_this.appkey, _this.appsecret, _this.appid], appkey = _ref2[0], appsecret = _ref2[1], appid = _ref2[2];
                 _ref3 = [_this._storage.get(_CStorage.CMMC_Storage.KEY_ACCESS_TOKEN), _this._storage.get(_CStorage.CMMC_Storage.KEY_ACCESS_TOKEN_SECRET)], access_token = _ref3[0], access_token_secret = _ref3[1];
                 endpoint = decodeURIComponent(_this._storage.get(_CStorage.CMMC_Storage.KEY_ENDPOINT));
                 hkey = Util.compute_hkey(access_token_secret, appsecret);
                 // let mqttusername = `${appkey}%${Math.floor(Date.now() / 1000)}`
 
-                mqttusername = '' + appkey;
+                mqttusername = "" + appkey;
                 mqttpassword = Util.compute_mqtt_password(access_token, mqttusername, hkey);
                 _endpoint$match = endpoint.match(/^([a-z]+):\/\/([^:\/]+):(\d+)/), _endpoint$match2 = (0, _slicedToArray3.default)(_endpoint$match, 4), input = _endpoint$match2[0], protocol = _endpoint$match2[1], host = _endpoint$match2[2], port = _endpoint$match2[3];
                 revoke_token = Util.compute_revoke_code(access_token, hkey);
 
-                Util.debug('revoke_token = ' + revoke_token);
+                Util.debug("revoke_token = " + revoke_token);
                 ret = {
                   revoke_token: revoke_token, appid: appid, host: host, port: port, endpoint: endpoint,
                   username: mqttusername,
                   password: mqttpassword,
                   client_id: access_token,
-                  prefix: '/' + appid + '/gearname/'
+                  prefix: "/" + appid + "/gearname/"
                 };
 
                 callback.apply(_this, [ret]);
@@ -100,20 +100,20 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   break;
                 }
 
-                Util.debug('req token');
-                return _context.abrupt('return', _this.getMqttAuth(callback));
+                Util.debug("req token");
+                return _context.abrupt("return", _this.getMqttAuth(callback));
 
               case 20:
                 _context.next = 22;
                 return _this.getOAuthToken().then(function () {
                   _this.getMqttAuth(callback);
                 }).catch(function (ex) {
-                  Util.debug('Error => ', ex.message);
+                  Util.debug("Error => ", ex.message);
                   throw ex;
                 });
 
               case 22:
-              case 'end':
+              case "end":
                 return _context.stop();
             }
           }
@@ -130,12 +130,12 @@ var NetpieAuth = exports.NetpieAuth = function () {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              return _context2.abrupt('return', _this.buildRequestObject('/api/rtoken').data({ oauth_callback: 'scope=&appid=' + _this.appid + '&mgrev=' + MGREV + '&verifier=' + verifier }).request(function (request_token) {
+              return _context2.abrupt("return", _this.buildRequestObject("/api/rtoken").data({ oauth_callback: "scope=&appid=" + _this.appid + "&mgrev=" + MGREV + "&verifier=" + verifier }).request(function (request_token) {
                 return _this.oauth.toHeader(_this.oauth.authorize(request_token)).Authorization;
               }));
 
             case 1:
-            case 'end':
+            case "end":
               return _context2.stop();
           }
         }
@@ -146,7 +146,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
-              return _context3.abrupt('return', _this.buildRequestObject('/api/atoken').data({ oauth_verifier: verifier }).request(function (request_data) {
+              return _context3.abrupt("return", _this.buildRequestObject("/api/atoken").data({ oauth_verifier: verifier }).request(function (request_data) {
                 var _reqtok = {
                   key: _this._storage.get(_CStorage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN),
                   secret: _this._storage.get(_CStorage.CMMC_Storage.KEY_OAUTH_REQUEST_TOKEN_SECRET)
@@ -156,7 +156,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               }));
 
             case 1:
-            case 'end':
+            case "end":
               return _context3.stop();
           }
         }
@@ -164,7 +164,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     }));
 
     this._saveRequestToken = function (params) {
-      Util.debug('SET STATE= ' + _CStorage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
+      Util.debug("SET STATE= " + _CStorage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
       var _data = new Map();
 
       _data.set(_CStorage.CMMC_Storage.KEY_STATE, _CStorage.CMMC_Storage.STATE.STATE_REQ_TOKEN);
@@ -185,7 +185,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
               key = _step$value[0],
               value = _step$value[1];
 
-          Util.debug('SAVE REQ TOKEN: KEY ', key, '>>', value);
+          Util.debug("SAVE REQ TOKEN: KEY ", key, ">>", value);
           _this._storage.set(key, value);
         }
       } catch (err) {
@@ -205,7 +205,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
     };
 
     this._saveAccessToken = function (object) {
-      Util.debug('SET STATE= ' + _CStorage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
+      Util.debug("SET STATE= " + _CStorage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
       var _data = new Map();
       _data.set(_CStorage.CMMC_Storage.KEY_STATE, _CStorage.CMMC_Storage.STATE.STATE_ACCESS_TOKEN);
       _data.set(_CStorage.CMMC_Storage.KEY_ACCESS_TOKEN, object.oauth_token);
@@ -286,7 +286,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
                 break;
               }
 
-              throw new Error('Reached maximum (devices) quota.');
+              throw new Error("Reached maximum (devices) quota.");
 
             case 14:
               _context4.t0 = _this;
@@ -316,14 +316,14 @@ var NetpieAuth = exports.NetpieAuth = function () {
 
             case 24:
               err = {
-                name: 'NetpieError',
-                type: 'Invalid AppKey or AppSecret',
-                message: req1_resp.status + ' ' + req1_resp.statusText + ' (Invalid AppKey or AppSecret)'
+                name: "NetpieError",
+                type: "Invalid AppKey or AppSecret",
+                message: req1_resp.status + " " + req1_resp.statusText + " (Invalid AppKey or AppSecret)"
               };
               throw new Error(err.message);
 
             case 26:
-            case 'end':
+            case "end":
               return _context4.stop();
           }
         }
@@ -338,7 +338,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
   }
 
   (0, _createClass3.default)(NetpieAuth, [{
-    key: 'initSync',
+    key: "initSync",
     value: function () {
       var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5() {
         var access_token_cached, access_token_secret_cached, revoke_token_cached, appid_cached, appkey_cached, appsecret_cached, should_revoke, resp, revoke_text;
@@ -360,11 +360,11 @@ var NetpieAuth = exports.NetpieAuth = function () {
                   break;
                 }
 
-                Util.log('[CACHED] => ' + access_token_cached + ' - ' + access_token_secret_cached + ', ' + revoke_token_cached);
-                Util.log('REVOKE URL = ' + gearauthurl + '/api/revoke/' + access_token_cached + '/' + revoke_token_cached);
+                Util.log("[CACHED] => " + access_token_cached + " - " + access_token_secret_cached + ", " + revoke_token_cached);
+                Util.log("REVOKE URL = " + gearauthurl + "/api/revoke/" + access_token_cached + "/" + revoke_token_cached);
                 _context5.prev = 11;
                 _context5.next = 14;
-                return this.buildRequestObject('/api/revoke/' + access_token_cached + '/' + revoke_token_cached, 'GET').request(function () {});
+                return this.buildRequestObject("/api/revoke/" + access_token_cached + "/" + revoke_token_cached, "GET").request(function () {});
 
               case 14:
                 resp = _context5.sent;
@@ -374,8 +374,8 @@ var NetpieAuth = exports.NetpieAuth = function () {
               case 17:
                 revoke_text = _context5.sent;
 
-                Util.log('REVOKE RESPONSE = ' + revoke_text);
-                if (revoke_text === 'SUCCESS') {
+                Util.log("REVOKE RESPONSE = " + revoke_text);
+                if (revoke_text === "SUCCESS") {
                   this._storage.clear();
                 }
                 _context5.next = 25;
@@ -383,17 +383,17 @@ var NetpieAuth = exports.NetpieAuth = function () {
 
               case 22:
                 _context5.prev = 22;
-                _context5.t0 = _context5['catch'](11);
+                _context5.t0 = _context5["catch"](11);
 
-                Util.log('ERROR', _context5.t0);
+                Util.log("ERROR", _context5.t0);
 
               case 25:
 
                 this.initilized = true;
-                return _context5.abrupt('return', this);
+                return _context5.abrupt("return", this);
 
               case 27:
-              case 'end':
+              case "end":
                 return _context5.stop();
             }
           }
@@ -407,7 +407,7 @@ var NetpieAuth = exports.NetpieAuth = function () {
       return initSync;
     }()
   }, {
-    key: 'prepare',
+    key: "prepare",
     value: function prepare(config) {
       this.oauth = OAuth({
         consumer: {
@@ -415,18 +415,18 @@ var NetpieAuth = exports.NetpieAuth = function () {
           secret: config.appsecret
         },
         last_ampersand: true,
-        signature_method: 'HMAC-SHA1',
+        signature_method: "HMAC-SHA1",
         hash_function: function hash_function(base_string, key) {
           return Util.hmac(base_string, key);
         }
       });
     }
   }, {
-    key: 'extract',
+    key: "extract",
     value: function extract(response) {
-      var arr = response.split('&');
+      var arr = response.split("&");
       return arr.reduce(function (acc, v) {
-        var _v$split = v.split('='),
+        var _v$split = v.split("="),
             _v$split2 = (0, _slicedToArray3.default)(_v$split, 2),
             key = _v$split2[0],
             value = _v$split2[1];
@@ -436,23 +436,23 @@ var NetpieAuth = exports.NetpieAuth = function () {
       }, {});
     }
   }, {
-    key: 'request',
+    key: "request",
     value: function () {
       var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(data, header_authorization_fn) {
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                return _context6.abrupt('return', fetch(data.url, {
+                return _context6.abrupt("return", fetch(data.url, {
                   method: data.method,
                   timeout: 5000,
                   headers: {
-                    'Authorization': header_authorization_fn.apply(this, [data])
+                    "Authorization": header_authorization_fn.apply(this, [data])
                   }
                 }));
 
               case 1:
-              case 'end':
+              case "end":
                 return _context6.stop();
             }
           }
@@ -466,11 +466,11 @@ var NetpieAuth = exports.NetpieAuth = function () {
       return request;
     }()
   }, {
-    key: 'buildRequestObject',
+    key: "buildRequestObject",
     value: function buildRequestObject(uri) {
       var _this2 = this;
 
-      var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'POST';
+      var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "POST";
 
       var obj = {
         method: method,

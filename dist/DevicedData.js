@@ -1,11 +1,11 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.DevicedData = undefined;
 
-var fs = require('fs');
+var fs = require("fs");
 
 var DevicedData = exports.DevicedData = function () {
   function DevicedData() {
@@ -39,12 +39,13 @@ var DevicedData = exports.DevicedData = function () {
           continue;
         }
 
-        var fileData = fs.readFileSync(fullFilePath, 'utf8');
+        var fileData = fs.readFileSync(fullFilePath, "utf8");
         fileData = JSON.parse(fileData);
         filesData.push(fileData);
       }
       return filesData;
     };
   }
+
   return DevicedData;
 }();

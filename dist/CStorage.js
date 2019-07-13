@@ -1,32 +1,32 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.CMMC_Storage = undefined;
 
-var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+var _possibleConstructorReturn2 = require("babel-runtime/helpers/possibleConstructorReturn");
 
 var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 
-var _inherits2 = require('babel-runtime/helpers/inherits');
+var _inherits2 = require("babel-runtime/helpers/inherits");
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+var _classCallCheck2 = require("babel-runtime/helpers/classCallCheck");
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 
-var _createClass2 = require('babel-runtime/helpers/createClass');
+var _createClass2 = require("babel-runtime/helpers/createClass");
 
 var _createClass3 = _interopRequireDefault(_createClass2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var localStorage = require('node-localstorage').LocalStorage;
-var keyMirror = require('key-mirror');
+var localStorage = require("node-localstorage").LocalStorage;
+var keyMirror = require("key-mirror");
 
-var CACHE_KEY = 'mg_cached';
+var CACHE_KEY = "mg_cached";
 
 var IStorage = function () {
   function IStorage() {
@@ -35,17 +35,17 @@ var IStorage = function () {
   }
 
   (0, _createClass3.default)(IStorage, [{
-    key: 'get',
+    key: "get",
     value: function get(k) {
       return this._storage[k];
     }
   }, {
-    key: 'set',
+    key: "set",
     value: function set(k, v) {
       this._storage[k] = v;
     }
   }, {
-    key: 'commit',
+    key: "commit",
     value: function commit() {}
   }]);
   return IStorage;
@@ -60,12 +60,12 @@ var MemoryStorage = function (_IStorage) {
   }
 
   (0, _createClass3.default)(MemoryStorage, [{
-    key: 'setItem',
+    key: "setItem",
     value: function setItem(key, value) {
       return this.set(key, value);
     }
   }, {
-    key: 'getItem',
+    key: "getItem",
     value: function getItem(key, func) {
       return this.get(key);
     }
@@ -77,16 +77,16 @@ var MyStorage = function () {
   function MyStorage(name) {
     (0, _classCallCheck3.default)(this, MyStorage);
 
-    this._private_storage = new localStorage('./' + name);
+    this._private_storage = new localStorage("./" + name);
   }
 
   (0, _createClass3.default)(MyStorage, [{
-    key: 'setItem',
+    key: "setItem",
     value: function setItem(key, value) {
       return this._private_storage.setItem(key, value);
     }
   }, {
-    key: 'getItem',
+    key: "getItem",
     value: function getItem(key, func) {
       return this._private_storage.getItem(key);
     }
@@ -113,7 +113,7 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage2) {
   (0, _inherits3.default)(CMMC_Storage, _IStorage2);
 
   function CMMC_Storage() {
-    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'tmp';
+    var name = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "tmp";
     var loaded_fn = arguments[1];
     (0, _classCallCheck3.default)(this, CMMC_Storage);
 
@@ -128,7 +128,7 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage2) {
   }
 
   (0, _createClass3.default)(CMMC_Storage, [{
-    key: 'load',
+    key: "load",
     value: function load() {
       var loaded = this._storage_driver.getItem(CACHE_KEY) || JSON.stringify({});
       this._storage = JSON.parse(loaded);
@@ -139,13 +139,13 @@ var CMMC_Storage = exports.CMMC_Storage = function (_IStorage2) {
       return this._storage;
     }
   }, {
-    key: 'clear',
+    key: "clear",
     value: function clear() {
       this._storage = {};
       this.commit();
     }
   }, {
-    key: 'commit',
+    key: "commit",
     value: function commit() {
       return this._storage_driver.setItem(CACHE_KEY, JSON.stringify(this._storage));
     }

@@ -46,7 +46,14 @@ const connectNetpie = () => {
   const appkey = configStore.get("key");
   const appsecret = configStore.get("secret");
 
-  const head = ["Username", "Password", "ClientId", "Prefix", "Host", "Port"];
+  const head = [
+    "Username",
+    "Password",
+    "ClientId",
+    "Prefix",
+    "Host",
+    "Port"
+  ];
   const table = new Table({ head, style: { head: ["green"] } });
 
   const netpie = new NetpieAuth({ appid, appkey, appsecret });
@@ -179,7 +186,6 @@ if (program.list) {
   var list = deviceData.getList();
 
   for (var i = 0; i < list.length; i++) {
-    // app
     var appID = Object.keys(list[i])[0];
     console.log("App ID:\t\t" + appID);
 
@@ -192,7 +198,8 @@ if (program.list) {
       console.log("Aapp Secret:\t" + appSecret);
 
       const head = [
-        "Username",
+        "No",
+        "UsernameX",
         "Password",
         "ClientId",
         "Prefix",
@@ -203,6 +210,7 @@ if (program.list) {
 
       for (var j = 0; j < data.length; j++) {
         table.push([
+          j + 1,
           data[j].Username,
           data[j].Password,
           data[j].ClientId,
