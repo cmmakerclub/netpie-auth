@@ -182,11 +182,11 @@ if (program.list) {
       console.log("App Key:\t" + appKey);
       console.log("Aapp Secret:\t" + appSecret);
 
-      var head = ["No", "UsernameX", "Password", "ClientId", "Prefix", "Host", "Port"];
+      var head = ["No", "UsernameX", "Password", "ClientId", "Prefix", "Host", "Port", "Remark"];
       var table = new _cliTable2.default({ head: head, style: { head: ["green"] } });
 
       for (var j = 0; j < data.length; j++) {
-        table.push([j + 1, data[j].Username, data[j].Password, data[j].ClientId, data[j].Prefix, data[j].Host, data[j].Port]);
+        table.push([j + 1, data[j].Username, data[j].Password, data[j].ClientId, data[j].Prefix, data[j].Host, data[j].Port, "-"]);
       }
 
       console.log(table.toString());

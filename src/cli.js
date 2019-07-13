@@ -204,7 +204,8 @@ if (program.list) {
         "ClientId",
         "Prefix",
         "Host",
-        "Port"
+        "Port",
+        "Remark"
       ];
       const table = new Table({ head, style: { head: ["green"] } });
 
@@ -216,7 +217,8 @@ if (program.list) {
           data[j].ClientId,
           data[j].Prefix,
           data[j].Host,
-          data[j].Port
+          data[j].Port,
+          "-"
         ]);
       }
 
