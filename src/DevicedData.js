@@ -1,28 +1,28 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.DevicedData = undefined;
 
-const fs = require('fs');
+const fs = require("fs");
 
-var DevicedData = exports.DevicedData = function () {
+var DevicedData = exports.DevicedData = function() {
   function DevicedData() {
     var prefix = "netpie-auth-";
     var useDir = process.cwd();//__dirname;
     var postfix = ""; // /config
     var _this = this;
 
-    this.Prefix = function () {
+    this.Prefix = function() {
       return prefix;
-    }
+    };
 
-    this.UserDir = function () {
+    this.UserDir = function() {
       return useDir;
-    }
+    };
 
-    this.getList = function () {
+    this.getList = function() {
 
       var configFolder = useDir + postfix;
 
@@ -39,12 +39,12 @@ var DevicedData = exports.DevicedData = function () {
           continue;
         }
 
-        var fileData = fs.readFileSync(fullFilePath, 'utf8');
+        var fileData = fs.readFileSync(fullFilePath, "utf8");
         fileData = JSON.parse(fileData);
-        filesData.push(fileData)
+        filesData.push(fileData);
       }
       return filesData;
-    }
+    };
   }
 
   return DevicedData;

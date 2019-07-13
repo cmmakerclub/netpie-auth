@@ -1,3 +1,3 @@
-var netpieAuth = require('./NetpieAuth');
+var netpieAuth = require("./NetpieAuth");
 
 module.exports = netpieAuth.NetpieAuth;
